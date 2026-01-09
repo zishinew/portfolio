@@ -219,7 +219,7 @@ a:hover {
   }
 
   section:first-of-type {
-    padding-top: 0.5rem;
+    padding-top: 4rem;
     padding-bottom: 1.5rem;
     height: 100vh;
     justify-content: flex-start;
