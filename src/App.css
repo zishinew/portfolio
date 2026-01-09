@@ -194,10 +194,32 @@ a:hover {
 
 @media (max-width: 768px) {
   main {
-    padding: 0 1.5rem;
+    padding: 0 1.5rem 6rem 1.5rem;
   }
 
   section {
-    padding: 2rem 0;
+    padding: 1.5rem 0;
+  }
+
+  section:first-of-type {
+    padding-top: 3rem;
+    padding-bottom: 2rem;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding: 0 1rem 5rem 1rem;
+  }
+
+  section {
+    padding: 1.25rem 0;
+  }
+
+  section:first-of-type {
+    padding-top: 2.5rem;
+    padding-bottom: 1.5rem;
+    min-height: auto;
   }
 }

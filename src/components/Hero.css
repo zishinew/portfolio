@@ -79,8 +79,8 @@
 @media (max-width: 768px) {
   .hero {
     padding-top: 0;
-    min-height: calc(100vh - 60px);
-    padding-bottom: 2rem;
+    min-height: auto;
+    padding-bottom: 4rem;
   }
 
   .hero-content {
@@ -107,6 +107,25 @@
 
   .hero-about {
     font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding-bottom: 6rem;
+  }
+
+  .hero-image {
+    width: 150px;
+    height: 150px;
+  }
+
+  .hero h1 {
+    font-size: 1.75rem;
+  }
+
+  .hero-content {
+    gap: 1rem;
   }
 }
 
