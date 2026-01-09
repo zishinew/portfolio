@@ -28,11 +28,17 @@ body {
   color: var(--text);
   line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease;
-  cursor: none !important;
 }
 
-* {
-  cursor: none !important;
+/* Only hide cursor on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+  body {
+    cursor: none !important;
+  }
+
+  * {
+    cursor: none !important;
+  }
 }
 
 .app {

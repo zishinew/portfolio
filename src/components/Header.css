@@ -38,11 +38,20 @@
 .logo-image {
   height: 40px;
   width: auto;
-  transition: filter 0.3s ease;
+  transition: filter 0.3s ease, transform 0.3s ease, brightness 0.3s ease;
+}
+
+.logo:hover .logo-image {
+  transform: scale(1.15);
+  filter: brightness(1.2);
 }
 
 [data-theme='dark'] .logo-image {
   filter: invert(1);
+}
+
+[data-theme='dark'] .logo:hover .logo-image {
+  filter: invert(1) brightness(1.2);
 }
 
 .theme-toggle {

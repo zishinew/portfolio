@@ -96,7 +96,7 @@ function Hero() {
             />
             <div className="speech-bubble">
               <span className="speech-text-default">Click me!</span>
-              <span className="speech-text-hover">See some of my photos in China.</span>
+              <span className="speech-text-hover">See some of my photos from my trip to China!</span>
             </div>
           </Link>
         </div>

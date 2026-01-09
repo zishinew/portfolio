@@ -35,6 +35,10 @@ function App() {
   }, [])
 
   useEffect(() => {
+    // Disable cursor effect on touch devices
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (isTouchDevice) return
+
     const handleMouseMove = (e) => {
       setCursorPosition({ x: e.clientX, y: e.clientY })
       if (!isVisible) setIsVisible(true)
@@ -63,6 +67,10 @@ function App() {
   }, [isVisible])
 
   useEffect(() => {
+    // Disable cursor trail on touch devices
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (isTouchDevice) return
+
     const trailLength = 35
     const speeds = Array.from({ length: trailLength }, (_, i) => 0.92 - (i * 0.022))
 
@@ -140,6 +148,9 @@ function App() {
     return <Loading fadeOut={fadeOut} />
   }
 
+  // Disable cursor on touch devices
+  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+
   return (
     <BrowserRouter>
       <Routes>
@@ -147,7 +158,7 @@ function App() {
           path="/"
           element={
             <div className="app">
-              {trailPositions.map((pos, index) => {
+              {!isTouchDevice && trailPositions.map((pos, index) => {
                 const distance = Math.sqrt(
                   Math.pow(pos.x - cursorPosition.x, 2) + Math.pow(pos.y - cursorPosition.y, 2)
                 )
@@ -170,14 +181,16 @@ function App() {
                   />
                 )
               })}
-              <div
-                className={`spotlight ${isHovering ? 'hovering' : ''}`}
-                style={{
-                  left: `${cursorPosition.x}px`,
-                  top: `${cursorPosition.y}px`,
-                  opacity: isVisible ? 1 : 0
-                }}
-              />
+              {!isTouchDevice && (
+                <div
+                  className={`spotlight ${isHovering ? 'hovering' : ''}`}
+                  style={{
+                    left: `${cursorPosition.x}px`,
+                    top: `${cursorPosition.y}px`,
+                    opacity: isVisible ? 1 : 0
+                  }}
+                />
+              )}
               <Header />
               <main>
                 <Hero />

@@ -43,8 +43,8 @@
 }
 
 .loading-dot {
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background-color: var(--text);
   animation: pulse 1.4s ease-in-out infinite;
@@ -99,7 +99,7 @@
   }
   
   .loading-dot {
-    width: 10px;
-    height: 10px;
+    width: 7px;
+    height: 7px;
   }
 }

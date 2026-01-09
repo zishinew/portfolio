@@ -5,45 +5,40 @@ import Loading from './Loading'
 import './ChinaPhotos.css'
 
 // Import all images from china-pics folder
-import img1 from '../../china-pics/1E3BD4DD-255C-4A97-8ABF-F590BD5A6AD3.jpg'
-import img2 from '../../china-pics/6651ef0ecf244b19f38ce3a68b989616.jpeg'
-import img3 from '../../china-pics/IMG_0459.jpeg'
-import img4 from '../../china-pics/IMG_0902.jpeg'
-import img5 from '../../china-pics/IMG_0963.jpeg'
-import img6 from '../../china-pics/IMG_1927.jpeg'
-import img7 from '../../china-pics/IMG_2162.jpeg'
-import img8 from '../../china-pics/IMG_2367.jpeg'
-import img9 from '../../china-pics/IMG_2433.jpeg'
-import img10 from '../../china-pics/IMG_2438.jpeg'
-import img11 from '../../china-pics/IMG_2529.jpeg'
-import img12 from '../../china-pics/IMG_2796.jpeg'
-import img13 from '../../china-pics/IMG_2811.jpeg'
-import img14 from '../../china-pics/IMG_2847.jpeg'
-import img15 from '../../china-pics/IMG_2851.jpeg'
-import img16 from '../../china-pics/IMG_3058.jpeg'
-import img17 from '../../china-pics/IMG_3467.png'
-import img18 from '../../china-pics/IMG_3506.jpeg'
-import img19 from '../../china-pics/IMG_3702.jpeg'
-import img20 from '../../china-pics/IMG_3796.jpeg'
-import img21 from '../../china-pics/IMG_3840.jpeg'
-import img22 from '../../china-pics/IMG_4044.jpeg'
-import img23 from '../../china-pics/IMG_4166.jpeg'
-import img24 from '../../china-pics/IMG_4188.jpeg'
-import img25 from '../../china-pics/IMG_4240.jpeg'
-import img26 from '../../china-pics/IMG_4306.jpeg'
-import img27 from '../../china-pics/IMG_6045.jpeg'
-import img28 from '../../china-pics/IMG_6202.jpeg'
-import img29 from '../../china-pics/IMG_6401.jpeg'
-import img30 from '../../china-pics/IMG_7274.jpeg'
-import img31 from '../../china-pics/IMG_7551.jpeg'
-import img32 from '../../china-pics/IMG_7663 2.jpeg'
-import img33 from '../../china-pics/IMG_7666.jpeg'
+import img1 from '../../china-pics/1E3BD4DD-255C-4A97-8ABF-F590BD5A6AD3.webp'
+import img2 from '../../china-pics/6651ef0ecf244b19f38ce3a68b989616.webp'
+import img3 from '../../china-pics/IMG_0459.webp'
+import img4 from '../../china-pics/IMG_0902.webp'
+import img5 from '../../china-pics/IMG_0963.webp'
+import img6 from '../../china-pics/IMG_1927.webp'
+import img7 from '../../china-pics/IMG_2367.webp'
+import img8 from '../../china-pics/IMG_2438.webp'
+import img9 from '../../china-pics/IMG_2513.webp'
+import img10 from '../../china-pics/IMG_2581.webp'
+import img11 from '../../china-pics/IMG_2621.webp'
+import img12 from '../../china-pics/IMG_2796.webp'
+import img13 from '../../china-pics/IMG_2951.webp'
+import img14 from '../../china-pics/IMG_3058.webp'
+import img15 from '../../china-pics/IMG_3286.webp'
+import img16 from '../../china-pics/IMG_3338.webp'
+import img17 from '../../china-pics/IMG_3385.webp'
+import img18 from '../../china-pics/IMG_3506.webp'
+import img19 from '../../china-pics/IMG_3796.webp'
+import img20 from '../../china-pics/IMG_3840.webp'
+import img21 from '../../china-pics/IMG_4044.webp'
+import img22 from '../../china-pics/IMG_4166.webp'
+import img23 from '../../china-pics/IMG_6045.webp'
+import img24 from '../../china-pics/IMG_6401.webp'
+import img25 from '../../china-pics/IMG_7090.webp'
+import img26 from '../../china-pics/IMG_7274.webp'
+import img27 from '../../china-pics/IMG_7519.webp'
+import img28 from '../../china-pics/IMG_7551.webp'
+import img29 from '../../china-pics/IMG_7663 2.webp'
 
 const imageFiles = [
   img1, img2, img3, img4, img5, img6, img7, img8, img9, img10,
   img11, img12, img13, img14, img15, img16, img17, img18, img19, img20,
-  img21, img22, img23, img24, img25, img26, img27, img28, img29, img30,
-  img31, img32, img33
+  img21, img22, img23, img24, img25, img26, img27, img28, img29
 ]
 
 function ChinaPhotos() {
@@ -56,8 +51,11 @@ function ChinaPhotos() {
   const [isLoading, setIsLoading] = useState(true)
   const [fadeOut, setFadeOut] = useState(false)
 
-  // Cursor tracking with throttling for better performance
+  // Cursor tracking with throttling for better performance - disabled on touch devices
   useEffect(() => {
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (isTouchDevice) return
+
     let rafId = null
     let lastX = 0
     let lastY = 0
@@ -97,8 +95,11 @@ function ChinaPhotos() {
     }
   }, [isVisible])
 
-  // Cursor trail animation - optimized with reduced trail length
+  // Cursor trail animation - optimized with reduced trail length - disabled on touch devices
   useEffect(() => {
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    if (isTouchDevice) return
+
     const trailLength = 20 // Reduced from 35 for better performance
     const speeds = Array.from({ length: trailLength }, (_, i) => 0.92 - (i * 0.025))
 
@@ -216,9 +217,11 @@ function ChinaPhotos() {
     return <Loading fadeOut={fadeOut} />
   }
 
+  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+
   return (
     <div className="china-photos-page">
-      {trailPositions.map((pos, index) => {
+      {!isTouchDevice && trailPositions.map((pos, index) => {
         const distance = Math.sqrt(
           Math.pow(pos.x - cursorPosition.x, 2) + Math.pow(pos.y - cursorPosition.y, 2)
         )
@@ -241,14 +244,16 @@ function ChinaPhotos() {
           />
         )
       })}
-      <div
-        className={`spotlight ${isHovering ? 'hovering' : ''}`}
-        style={{
-          left: `${cursorPosition.x}px`,
-          top: `${cursorPosition.y}px`,
-          opacity: isVisible ? 1 : 0
-        }}
-      />
+      {!isTouchDevice && (
+        <div
+          className={`spotlight ${isHovering ? 'hovering' : ''}`}
+          style={{
+            left: `${cursorPosition.x}px`,
+            top: `${cursorPosition.y}px`,
+            opacity: isVisible ? 1 : 0
+          }}
+        />
+      )}
       <Header />
       <button className="back-button" onClick={() => navigate('/')}>
         ← Back
@@ -282,7 +287,7 @@ function ChinaPhotos() {
               navigateImage('prev')
             }}
           >
-            ‹
+            <span>‹</span>
           </button>
           <img
             src={imageFiles[selectedImage]}
@@ -297,7 +302,7 @@ function ChinaPhotos() {
               navigateImage('next')
             }}
           >
-            ›
+            <span>›</span>
           </button>
         </div>
       )}
