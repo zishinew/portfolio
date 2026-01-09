@@ -1,0 +1,197 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #ffffff;
+  --text: #0a0a0a;
+  --text-secondary: #666666;
+  --accent: #0a0a0a;
+  --border: #e0e0e0;
+}
+
+[data-theme='dark'] {
+  --bg: #0a0a0a;
+  --text: #ffffff;
+  --text-secondary: #999999;
+  --accent: #ffffff;
+  --border: #333333;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: none !important;
+}
+
+* {
+  cursor: none !important;
+}
+
+.app {
+  min-height: 100vh;
+  position: relative;
+}
+
+.spotlight {
+  position: fixed;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 30%, rgba(180, 220, 255, 1) 40%, rgba(100, 200, 255, 1) 50%, rgba(100, 200, 255, 0.3) 70%, rgba(100, 200, 255, 0.1) 85%, transparent 100%);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+  transition: width 0.15s ease, height 0.15s ease, background 0.15s ease;
+}
+
+.spotlight.hovering {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 30%, rgba(100, 220, 200, 1) 40%, rgba(50, 200, 180, 1) 50%, rgba(50, 200, 180, 0.3) 70%, rgba(50, 200, 180, 0.1) 85%, transparent 100%);
+}
+
+[data-theme='dark'] .spotlight {
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 30%, rgba(220, 190, 255, 1) 40%, rgba(200, 150, 255, 1) 50%, rgba(200, 150, 255, 0.3) 70%, rgba(200, 150, 255, 0.1) 85%, transparent 100%);
+}
+
+[data-theme='dark'] .spotlight.hovering {
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 30%, rgba(230, 100, 180, 1) 40%, rgba(210, 80, 160, 1) 50%, rgba(210, 80, 160, 0.3) 70%, rgba(210, 80, 160, 0.1) 85%, transparent 100%);
+}
+
+.spotlight-trail {
+  position: fixed;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(80, 190, 255, 0.28) 0%, rgba(80, 190, 255, 0.14) 25%, rgba(80, 190, 255, 0.04) 45%, transparent 65%);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  transition: background 0.15s ease, opacity 0.3s ease;
+}
+
+.spotlight-trail.hovering {
+  background: radial-gradient(circle, rgba(50, 200, 180, 0.28) 0%, rgba(50, 200, 180, 0.14) 25%, rgba(50, 200, 180, 0.04) 45%, transparent 65%);
+}
+
+[data-theme='dark'] .spotlight-trail {
+  background: radial-gradient(circle, rgba(190, 130, 255, 0.20) 0%, rgba(190, 130, 255, 0.10) 25%, rgba(190, 130, 255, 0.03) 45%, transparent 65%);
+}
+
+[data-theme='dark'] .spotlight-trail.hovering {
+  background: radial-gradient(circle, rgba(230, 100, 180, 0.20) 0%, rgba(230, 100, 180, 0.10) 25%, rgba(230, 100, 180, 0.03) 45%, transparent 65%);
+}
+
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 2rem 8rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+section {
+  min-height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+section:first-of-type {
+  min-height: 100vh;
+  padding-top: 5rem;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  transition: transform 0.3s ease;
+}
+
+h1:hover, h2:hover, h3:hover, h4:hover {
+  transform: scale(1.05);
+}
+
+h1 {
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  line-height: 1.2;
+  font-weight: 400;
+}
+
+h2 {
+  font-size: clamp(1.5rem, 4vw, 1.85rem);
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+}
+
+h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 400;
+}
+
+p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  transition: transform 0.3s ease;
+}
+
+a {
+  color: var(--text);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+a:hover {
+  opacity: 0.6;
+}
+
+/* Scroll Animations - Writing Effect */
+.hero-content,
+.about-wrapper,
+.education-wrapper,
+.experience-wrapper,
+.projects-wrapper,
+.contact-wrapper {
+  opacity: 0;
+}
+
+.hero-content.fade-in,
+.about-wrapper.fade-in,
+.education-wrapper.fade-in,
+.experience-wrapper.fade-in,
+.projects-wrapper.fade-in,
+.contact-wrapper.fade-in {
+  animation: slideInFromLeft 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) {
+  main {
+    padding: 0 1.5rem;
+  }
+
+  section {
+    padding: 2rem 0;
+  }
+}

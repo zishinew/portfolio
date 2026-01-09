@@ -1,0 +1,113 @@
+.about-content > p {
+  margin-bottom: 1rem;
+}
+
+.section-heading {
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+  margin-top: 2.5rem;
+  color: var(--text);
+}
+
+.education-section,
+.experience-section,
+.skills-section {
+  margin-top: 2.5rem;
+}
+
+.education-item,
+.experience-item {
+  margin-bottom: 1.5rem;
+}
+
+.experience-item:last-child {
+  margin-bottom: 0;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+}
+
+.item-header h4 {
+  font-size: 1rem;
+  font-weight: 400;
+  margin: 0;
+  color: var(--text);
+}
+
+.period {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  font-style: italic;
+}
+
+.details-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.details-list li {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  padding-left: 1.25rem;
+  position: relative;
+  line-height: 1.6;
+}
+
+.details-list li:before {
+  content: "–";
+  position: absolute;
+  left: 0;
+}
+
+.skills-section {
+  margin-top: 4rem;
+}
+
+.skill-category {
+  margin-bottom: 1.25rem;
+}
+
+.skill-category:last-child {
+  margin-bottom: 0;
+}
+
+.category-title {
+  font-size: 0.85rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.skill {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  transition: transform 0.3s ease;
+}
+
+.skill:hover {
+  transform: scale(1.1);
+}
