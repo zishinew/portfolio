@@ -23,7 +23,7 @@ function Hero() {
         </div>
         <div className="hero-image-container">
           <img 
-            src="/profile-picture.jpg" 
+            src="/profile-picture.png" 
             alt="Zishine" 
             className="hero-image"
           />
