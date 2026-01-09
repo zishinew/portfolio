@@ -1,15 +1,51 @@
 import { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import './Header.css'
 import logoImg from '../../logo.png'
 
 function Header() {
   const [isDark, setIsDark] = useState(false)
+  const location = useLocation()
 
   useEffect(() => {
+    // Check system preference first, then saved preference
+    const getSystemTheme = () => {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    }
+
     const savedTheme = localStorage.getItem('theme')
-    if (savedTheme === 'dark') {
+    const systemTheme = getSystemTheme()
+    
+    // Use saved theme if exists, otherwise use system preference
+    const themeToUse = savedTheme || systemTheme
+    
+    if (themeToUse === 'dark') {
       setIsDark(true)
       document.documentElement.setAttribute('data-theme', 'dark')
+    } else {
+      setIsDark(false)
+      document.documentElement.removeAttribute('data-theme')
+    }
+
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleSystemThemeChange = (e) => {
+      // Only update if user hasn't manually set a preference
+      if (!localStorage.getItem('theme')) {
+        if (e.matches) {
+          setIsDark(true)
+          document.documentElement.setAttribute('data-theme', 'dark')
+        } else {
+          setIsDark(false)
+          document.documentElement.removeAttribute('data-theme')
+        }
+      }
+    }
+    
+    mediaQuery.addEventListener('change', handleSystemThemeChange)
+    
+    return () => {
+      mediaQuery.removeEventListener('change', handleSystemThemeChange)
     }
   }, [])
 
@@ -40,28 +76,21 @@ function Header() {
     }
   }
 
-  const scrollToSection = (id) => {
-    const element = document.getElementById(id)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
+  const handleLogoClick = () => {
+    if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
   return (
     <header className="header">
       <div className="header-content">
-        <button onClick={() => scrollToSection('home')} className="logo">
+        <Link to="/" onClick={handleLogoClick} className="logo">
           <img src={logoImg} alt="Logo" className="logo-image" />
-          <span className="logo-text">zishinew.com</span>
+        </Link>
+        <button onClick={toggleTheme} className="theme-toggle">
+          {isDark ? '☀' : '☾'}
         </button>
-        <nav>
-          <button onClick={() => scrollToSection('about')}>About</button>
-          <button onClick={() => scrollToSection('projects')}>Work</button>
-          <button onClick={() => scrollToSection('contact')}>Contact</button>
-          <button onClick={toggleTheme} className="theme-toggle">
-            {isDark ? '☀' : '☾'}
-          </button>
-        </nav>
       </div>
     </header>
   )

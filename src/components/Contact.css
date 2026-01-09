@@ -19,7 +19,8 @@
   font-weight: 500;
 }
 
-.contact-footer:hover .contact-label {
+.contact-footer:hover .contact-label,
+.contact-footer.expanded .contact-label {
   opacity: 1;
 }
 
@@ -36,7 +37,8 @@
   transition: transform 0.3s ease, padding 0.3s ease, gap 0.3s ease;
 }
 
-.icon-container:hover {
+.icon-container:hover,
+.contact-footer.expanded .icon-container {
   transform: scale(1.15);
   padding: 1.25rem 2rem;
   gap: 2rem;

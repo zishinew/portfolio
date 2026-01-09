@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import Education from './components/Education'
 import Experience from './components/Experience'
 import Projects from './components/Projects'
 import Contact from './components/Contact'
+import Loading from './components/Loading'
+import ChinaPhotos from './components/ChinaPhotos'
 import './App.css'
 
 function App() {
@@ -12,6 +15,24 @@ function App() {
   const [isVisible, setIsVisible] = useState(false)
   const [trailPositions, setTrailPositions] = useState([])
   const [isHovering, setIsHovering] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [fadeOut, setFadeOut] = useState(false)
+
+  // Initialize theme before loading screen shows
+  useEffect(() => {
+    const getSystemTheme = () => {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    }
+
+    const savedTheme = localStorage.getItem('theme')
+    const themeToUse = savedTheme || getSystemTheme()
+    
+    if (themeToUse === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark')
+    } else {
+      document.documentElement.removeAttribute('data-theme')
+    }
+  }, [])
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -78,48 +99,99 @@ function App() {
     return () => cancelAnimationFrame(animationFrameId)
   }, [cursorPosition, trailPositions.length])
 
-  return (
-    <div className="app">
-      {trailPositions.map((pos, index) => {
-        const distance = Math.sqrt(
-          Math.pow(pos.x - cursorPosition.x, 2) + Math.pow(pos.y - cursorPosition.y, 2)
-        )
-        const maxDistance = 200
-        const distanceFactor = Math.max(0, 1 - (distance / maxDistance))
-        const baseOpacity = (1 - (index / trailPositions.length)) * 2.5
-        const size = 40 - (index * 0.8)
+  useEffect(() => {
+    const startTime = Date.now()
+    const minLoadingTime = 2000
 
-        return (
-          <div
-            key={index}
-            className={`spotlight-trail ${isHovering ? 'hovering' : ''}`}
-            style={{
-              left: `${pos.x}px`,
-              top: `${pos.y}px`,
-              width: `${size}px`,
-              height: `${size}px`,
-              opacity: isVisible ? baseOpacity * distanceFactor : 0
-            }}
-          />
-        )
-      })}
-      <div
-        className={`spotlight ${isHovering ? 'hovering' : ''}`}
-        style={{
-          left: `${cursorPosition.x}px`,
-          top: `${cursorPosition.y}px`,
-          opacity: isVisible ? 1 : 0
-        }}
-      />
-      <Header />
-      <main>
-        <Hero />
-        <Education />
-        <Experience />
-        <Projects />
-        <Contact />
-      </main>
-    </div>
+    const loadImages = async () => {
+      const images = document.querySelectorAll('img')
+      const imagePromises = Array.from(images).map(img => {
+        if (img.complete) {
+          return Promise.resolve()
+        }
+        return new Promise((resolve) => {
+          img.addEventListener('load', resolve)
+          img.addEventListener('error', resolve)
+        })
+      })
+
+      await Promise.all(imagePromises)
+
+      const elapsedTime = Date.now() - startTime
+      const remainingTime = Math.max(0, minLoadingTime - elapsedTime)
+
+      setTimeout(() => {
+        setFadeOut(true)
+        setTimeout(() => {
+          setIsLoading(false)
+        }, 600)
+      }, remainingTime)
+    }
+
+    if (document.readyState === 'complete') {
+      loadImages()
+    } else {
+      window.addEventListener('load', loadImages)
+      return () => window.removeEventListener('load', loadImages)
+    }
+  }, [])
+
+  if (isLoading) {
+    return <Loading fadeOut={fadeOut} />
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <div className="app">
+              {trailPositions.map((pos, index) => {
+                const distance = Math.sqrt(
+                  Math.pow(pos.x - cursorPosition.x, 2) + Math.pow(pos.y - cursorPosition.y, 2)
+                )
+                const maxDistance = 200
+                const distanceFactor = Math.max(0, 1 - (distance / maxDistance))
+                const baseOpacity = (1 - (index / trailPositions.length)) * 2.5
+                const size = 40 - (index * 0.8)
+
+                return (
+                  <div
+                    key={index}
+                    className={`spotlight-trail ${isHovering ? 'hovering' : ''}`}
+                    style={{
+                      left: `${pos.x}px`,
+                      top: `${pos.y}px`,
+                      width: `${size}px`,
+                      height: `${size}px`,
+                      opacity: isVisible ? baseOpacity * distanceFactor : 0
+                    }}
+                  />
+                )
+              })}
+              <div
+                className={`spotlight ${isHovering ? 'hovering' : ''}`}
+                style={{
+                  left: `${cursorPosition.x}px`,
+                  top: `${cursorPosition.y}px`,
+                  opacity: isVisible ? 1 : 0
+                }}
+              />
+              <Header />
+              <main>
+                <Hero />
+                <Education />
+                <Experience />
+                <Projects />
+                <Contact />
+              </main>
+            </div>
+          }
+        />
+        <Route path="/china-photos" element={<ChinaPhotos />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
