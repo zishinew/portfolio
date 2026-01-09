@@ -205,6 +205,7 @@ a:hover {
     padding-top: 3.5rem;
     padding-bottom: 2rem;
     height: 100vh;
+    justify-content: flex-start;
   }
 }
 
@@ -221,5 +222,6 @@ a:hover {
     padding-top: 0.5rem;
     padding-bottom: 1.5rem;
     height: 100vh;
+    justify-content: flex-start;
   }
 }
