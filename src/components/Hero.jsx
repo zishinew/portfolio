@@ -1,5 +1,6 @@
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import './Hero.css'
+import profileImg from '../../profile-picture.png'
 
 function Hero() {
   const [ref, isVisible] = useScrollAnimation()
@@ -23,7 +24,7 @@ function Hero() {
         </div>
         <div className="hero-image-container">
           <img 
-            src="/profile-picture.png" 
+            src={profileImg} 
             alt="Zishine" 
             className="hero-image"
           />
