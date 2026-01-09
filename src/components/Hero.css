@@ -79,7 +79,8 @@
 @media (max-width: 768px) {
   .hero {
     padding-top: 0;
-    min-height: auto;
+    min-height: 0;
+    flex: 1;
     padding-bottom: 4rem;
   }
 
@@ -112,6 +113,8 @@
 
 @media (max-width: 480px) {
   .hero {
+    min-height: 0;
+    flex: 1;
     padding-bottom: 6rem;
   }
 
