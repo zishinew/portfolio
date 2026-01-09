@@ -81,8 +81,8 @@
     padding-top: 0;
     min-height: 0;
     flex: 1;
-    align-items: flex-start;
-    justify-content: flex-start;
+    align-items: center;
+    justify-content: center;
     padding-bottom: 4rem;
   }
 
@@ -92,6 +92,7 @@
     text-align: center;
     align-items: center;
     padding: 0 1rem;
+    margin-top: -2rem;
   }
 
   .hero h1 {
@@ -117,9 +118,13 @@
   .hero {
     min-height: 0;
     flex: 1;
-    align-items: flex-start;
-    justify-content: flex-start;
+    align-items: center;
+    justify-content: center;
     padding-bottom: 6rem;
+  }
+
+  .hero-content {
+    margin-top: -3rem;
   }
 
   .hero-image {
