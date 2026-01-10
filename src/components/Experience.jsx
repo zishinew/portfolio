@@ -1,5 +1,6 @@
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import './Experience.css'
+import uwOrbitalLogo from '../../uw-orbital.png'
 
 function Experience() {
   const [ref, isVisible] = useScrollAnimation()
@@ -9,6 +10,7 @@ function Experience() {
       title: 'Ground Station Software Developer',
       company: 'UW Orbital',
       period: 'Nov. 2025 – Present',
+      logo: uwOrbitalLogo,
       description: [
         'Developed full-stack features with a FastAPI (Python) backend and React (TypeScript) frontend',
         'Engineered RESTful endpoints using SQLModel for CRUD operations and command data validation',
@@ -37,7 +39,12 @@ function Experience() {
                 <h4>{job.title}</h4>
                 <span className="period">{job.period}</span>
               </div>
-              <p className="subtitle">{job.company}</p>
+              <div className="company-with-logo">
+                {job.logo && (
+                  <img src={job.logo} alt={job.company} className="company-logo" />
+                )}
+                <p className="subtitle">{job.company}</p>
+              </div>
               <ul className="details-list">
                 {job.description.map((item, i) => (
                   <li key={i}>{item}</li>

@@ -1,5 +1,6 @@
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import './Education.css'
+import uwLogo from '../../University_of_Waterloo_seal.png'
 
 function Education() {
   const [ref, isVisible] = useScrollAnimation()
@@ -20,16 +21,21 @@ function Education() {
         <h2>Education</h2>
         <div className="education-content">
           <div className="education-item">
-            <div className="item-header">
-              <h4>{education.school}</h4>
-              <span className="period">{education.period}</span>
+            <div className="education-header-with-logo">
+              <img src={uwLogo} alt="University of Waterloo" className="education-logo" />
+              <div className="education-text-content">
+                <div className="item-header">
+                  <h4>{education.school}</h4>
+                  <span className="period">{education.period}</span>
+                </div>
+                <p className="subtitle">{education.degree}</p>
+                <ul className="details-list">
+                  {education.details.map((detail, index) => (
+                    <li key={index}>{detail}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            <p className="subtitle">{education.degree}</p>
-            <ul className="details-list">
-              {education.details.map((detail, index) => (
-                <li key={index}>{detail}</li>
-              ))}
-            </ul>
           </div>
         </div>
       </div>
