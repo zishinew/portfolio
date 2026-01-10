@@ -10,21 +10,12 @@ function Experience() {
       title: 'Ground Station Software Developer',
       company: 'UW Orbital',
       period: 'Nov. 2025 – Present',
-      logo: uwOrbitalLogo,
-      description: [
-        'Developed full-stack features with a FastAPI (Python) backend and React (TypeScript) frontend',
-        'Engineered RESTful endpoints using SQLModel for CRUD operations and command data validation',
-        'Built asynchronous middleware for request logging and error handling utilizing Loguru'
-      ]
+      logo: uwOrbitalLogo
     },
     {
       title: 'Freelance Game Art Designer',
       company: 'Self-Employed',
-      period: 'Aug. 2021 – Present',
-      description: [
-        'Managed client relationships and project timelines, consistently delivering high-quality assets to 100+ clients',
-        'Built a personal brand with over 11,000+ followers and more than 1M+ impressions across platforms'
-      ]
+      period: 'Aug. 2021 – Present'
     }
   ]
 
@@ -45,11 +36,6 @@ function Experience() {
                 )}
                 <p className="subtitle">{job.company}</p>
               </div>
-              <ul className="details-list">
-                {job.description.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
             </div>
           ))}
         </div>
