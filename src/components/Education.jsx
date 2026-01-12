@@ -7,18 +7,18 @@ function Education() {
 
   const education = {
     school: 'University of Waterloo',
-    degree: 'Honours Bachelor of Mathematics',
-    period: 'Sept. 2025 – 2030',
+    degree: 'honours bachelor of mathematics',
+    period: 'sept. 2025 – 2030',
     details: [
-      'Relevant Coursework: Calculus 1, Algebra, Designing Functional Programs',
-      "President's Scholarship: Awarded for academic achievement"
+      'relevant coursework: calculus 1, algebra, designing functional programs',
+      "president's scholarship: awarded for academic achievement"
     ]
   }
 
   return (
     <section id="education" className="education">
       <div ref={ref} className={`education-wrapper ${isVisible ? 'fade-in' : ''}`}>
-        <h2>Education</h2>
+        <h2>education</h2>
         <div className="education-content">
           <div className="education-item">
             <div className="education-header-with-logo">

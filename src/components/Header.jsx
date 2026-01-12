@@ -86,7 +86,7 @@ function Header() {
     <header className="header">
       <div className="header-content">
         <Link to="/" onClick={handleLogoClick} className="logo">
-          <img src={logoImg} alt="Logo" className="logo-image" />
+          <img src={logoImg} alt="logo" className="logo-image" />
         </Link>
         <button onClick={toggleTheme} className="theme-toggle">
           {isDark ? '☀' : '☾'}

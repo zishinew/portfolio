@@ -32,7 +32,7 @@ function Contact() {
 
   return (
     <div className={`contact-footer ${isNearBottom ? 'expanded' : ''}`}>
-      <div className="contact-label">Contact me!</div>
+      <div className="contact-label">let's chat!</div>
       <div className="icon-container">
         {links.map((link, index) => {
           const IconComponent = link.icon

@@ -29,22 +29,22 @@ function Projects() {
   const projects = [
     {
       title: 'California Housing Price Predictor',
-      description: 'Developed a regression model to predict median house values, achieving 84% accuracy. Cleaned and preprocessed datasets using Pandas and NumPy, with feature scaling and one-hot encoding.',
-      tags: ['Python', 'Scikit-learn', 'Pandas', 'NumPy', 'Matplotlib'],
+      description: 'developed a regression model to predict median house values, achieving 84% accuracy. cleaned and preprocessed datasets using pandas and numpy, with feature scaling and one-hot encoding.',
+      tags: ['python', 'scikit-learn', 'pandas', 'numpy', 'matplotlib'],
       link: 'https://github.com/zishinew/California-Housing-Price-Predictor',
       image: isDark ? mlDark : mlLight
     },
     {
       title: 'AI Resume Reviewer',
-      description: 'Integrated Google\'s Gemini API to automate resume critiques. Developed and deployed a full-stack web application for accessible file upload and instant AI reviews.',
-      tags: ['Python', 'Streamlit', 'Gemini API'],
+      description: 'integrated google\'s gemini api to automate resume critiques. developed and deployed a full-stack web application for accessible file upload and instant ai reviews.',
+      tags: ['python', 'streamlit', 'gemini api'],
       link: 'https://github.com/zishinew/AI-Resume-Critique',
       image: isDark ? aiDark : aiLight
     },
     {
       title: 'Automated File Organization App',
-      description: 'Reduced file management time by engineering a script to automate file organization, sorting 18+ file types. Developed a full-stack application using CustomTkinter.',
-      tags: ['Python', 'CustomTkinter'],
+      description: 'reduced file management time by engineering a script to automate file organization, sorting 18+ file types. developed a full-stack application using customtkinter.',
+      tags: ['python', 'customtkinter'],
       link: 'https://github.com/zishinew/File-Organizer',
       image: isDark ? fileDark : fileLight
     }
@@ -53,7 +53,7 @@ function Projects() {
   return (
     <section id="projects" className="projects">
       <div ref={ref} className={`projects-wrapper ${isVisible ? 'fade-in' : ''}`}>
-        <h2>Projects</h2>
+        <h2>projects</h2>
         <div className="projects-list">
         {projects.map((project, index) => (
           <a href={project.link} key={index} className="project-card" target="_blank" rel="noopener noreferrer">

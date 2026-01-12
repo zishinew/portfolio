@@ -9,20 +9,20 @@ function Experience() {
     {
       title: 'Ground Station Software Developer',
       company: 'UW Orbital',
-      period: 'Nov. 2025 – Present',
+      period: 'nov. 2025 – present',
       logo: uwOrbitalLogo
     },
     {
       title: 'Freelance Game Art Designer',
-      company: 'Self-Employed',
-      period: 'Aug. 2021 – Present'
+      company: 'self-employed',
+      period: 'aug. 2021 – present'
     }
   ]
 
   return (
     <section id="experience" className="experience">
       <div ref={ref} className={`experience-wrapper ${isVisible ? 'fade-in' : ''}`}>
-        <h2>Experience</h2>
+        <h2>experience</h2>
         <div className="experience-content">
           {experience.map((job, index) => (
             <div key={index} className="experience-item">
@@ -36,6 +36,9 @@ function Experience() {
                 )}
                 <p className="subtitle">{job.company}</p>
               </div>
+              {job.description && (
+                <p className="experience-description">{job.description}</p>
+              )}
             </div>
           ))}
         </div>

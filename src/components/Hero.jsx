@@ -4,6 +4,7 @@ import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import './Hero.css'
 import profileImg from '../../profile-picture.png'
 import profileImgDark from '../../profile-picture-dark.png'
+import uwLogo from '../../University_of_Waterloo_seal.png'
 
 function Hero() {
   const [ref, isVisible] = useScrollAnimation()
@@ -75,16 +76,16 @@ function Hero() {
       <div ref={ref} className={`hero-content ${isVisible ? 'fade-in' : ''}`}>
         <div className="hero-text">
           <h1>
-            Hi, I'm Zishine!
+            hey, i'm zishine 👋
           </h1>
           <p className="hero-description">
-            Math @ UWaterloo
+            math @ <span className="uwaterloo-text"><img src={uwLogo} alt="University of Waterloo" className="hero-uw-logo" />uwaterloo</span>
           </p>
           <p className="hero-about">
-            I'm a first year Honours Mathematics student at the University of Waterloo. I'm currently looking for Summer 2026 internship positions.
+            first year math student trying to make it in tech. currently on the hunt for summer 2026 internships.
           </p>
           <p className="hero-about">
-            I also run a YouTube channel making game art with 11k+ subscribers and over 1m+ impressions, where I post my creations and take commissions.
+          i also run a youtube channel making game art with 11k+ subscribers and over 1m+ impressions, where i post my creations and take commissions.
           </p>
         </div>
         <div className="hero-image-container">
@@ -95,8 +96,8 @@ function Hero() {
               className={`hero-image ${isFlipping ? 'flipping' : ''}`}
             />
             <div className="speech-bubble">
-              <span className="speech-text-default">Click me!</span>
-              <span className="speech-text-hover">See some of my photos from my trip to China!</span>
+              <span className="speech-text-default">click me!</span>
+              <span className="speech-text-hover">see some of my photos from my trip to china!</span>
             </div>
           </Link>
         </div>
