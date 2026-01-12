@@ -30,7 +30,7 @@ function Projects() {
   const projects = [
     {
       title: 'hearth.',
-      description: 'built a full-stack ai application that analyzes real estate listings to find accessibility barriers and generates renovation visualizations with cost estimates. engineered a web scraping pipeline using playwright to extract property images from realtor.ca listings.',
+      description: 'built a full-stack ai application for seniors that analyzes real estate listings to find accessibility barriers and generates renovation visualizations with cost estimates.',
       tags: ['fastapi', 'next.js', 'typescript', 'google gemini api', 'playwright'],
       link: 'https://github.com/zishinew/hearth',
       image: hearthImage
