@@ -29,11 +29,6 @@ function Education() {
                   <span className="period">{education.period}</span>
                 </div>
                 <p className="subtitle">{education.degree}</p>
-                <ul className="details-list">
-                  {education.details.map((detail, index) => (
-                    <li key={index}>{detail}</li>
-                  ))}
-                </ul>
               </div>
             </div>
           </div>
