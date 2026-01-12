@@ -4,6 +4,7 @@ import aiLight from '../../ai-light.png'
 import aiDark from '../../ai-dark.png'
 import fileLight from '../../file-light.png'
 import fileDark from '../../file-dark.png'
+import hearthImage from '../../hearth.png'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import './Projects.css'
 import { useState, useEffect } from 'react'
@@ -27,6 +28,13 @@ function Projects() {
   }, [])
 
   const projects = [
+    {
+      title: 'hearth.',
+      description: 'built a full-stack ai application that analyzes real estate listings to find accessibility barriers and generates renovation visualizations with cost estimates. engineered a web scraping pipeline using playwright to extract property images from realtor.ca listings.',
+      tags: ['fastapi', 'next.js', 'typescript', 'google gemini api', 'playwright'],
+      link: 'https://github.com/zishinew/hearth',
+      image: hearthImage
+    },
     {
       title: 'California Housing Price Predictor',
       description: 'developed a regression model to predict median house values, achieving 84% accuracy. cleaned and preprocessed datasets using pandas and numpy, with feature scaling and one-hot encoding.',
