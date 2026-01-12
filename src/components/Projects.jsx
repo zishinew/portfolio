@@ -30,28 +30,28 @@ function Projects() {
   const projects = [
     {
       title: 'hearth.',
-      description: 'built a full-stack ai application for seniors that analyzes real estate listings to find accessibility barriers and generates renovation visualizations with cost estimates.',
+      description: 'application for seniors that analyzes real estate listings to find accessibility barriers and generates renovation visualizations with cost estimates.',
       tags: ['fastapi', 'next.js', 'typescript', 'react', 'python', 'tailwindcss', 'google gemini api', 'playwright'],
       link: 'https://github.com/zishinew/hearth',
       image: hearthImage
     },
     {
       title: 'California Housing Price Predictor',
-      description: 'developed a regression model to predict median house values, achieving 84% accuracy. cleaned and preprocessed datasets using pandas and numpy, with feature scaling and one-hot encoding.',
+      description: 'regression model to predict median house values, achieving 84% accuracy.',
       tags: ['python', 'scikit-learn', 'pandas', 'numpy', 'matplotlib'],
       link: 'https://github.com/zishinew/California-Housing-Price-Predictor',
       image: isDark ? mlDark : mlLight
     },
     {
       title: 'AI Resume Reviewer',
-      description: 'integrated google\'s gemini api to automate resume critiques. developed and deployed a full-stack web application for accessible file upload and instant ai reviews.',
+      description: 'Automated resume reviews using a set criteria.',
       tags: ['python', 'streamlit', 'gemini api'],
       link: 'https://github.com/zishinew/AI-Resume-Critique',
       image: isDark ? aiDark : aiLight
     },
     {
       title: 'Automated File Organization App',
-      description: 'reduced file management time by engineering a script to automate file organization, sorting 18+ file types. developed a full-stack application using customtkinter.',
+      description: 'reduced file management time by engineering a script to automate file organization, sorting 18+ file types.',
       tags: ['python', 'customtkinter'],
       link: 'https://github.com/zishinew/File-Organizer',
       image: isDark ? fileDark : fileLight
