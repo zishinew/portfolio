@@ -32,7 +32,7 @@ function Projects() {
       title: 'hearth.',
       description: 'application for seniors that analyzes real estate listings to find accessibility barriers and generates renovation visualizations with cost estimates.',
       tags: ['fastapi', 'next.js', 'typescript', 'react', 'python', 'tailwindcss', 'google gemini api', 'playwright'],
-      link: 'https://github.com/zishinew/hearth',
+      link: 'https://github.com/zishinew/hearth-ai',
       image: hearthImage
     },
     {
