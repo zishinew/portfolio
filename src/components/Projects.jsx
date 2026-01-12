@@ -31,7 +31,7 @@ function Projects() {
     {
       title: 'hearth.',
       description: 'built a full-stack ai application for seniors that analyzes real estate listings to find accessibility barriers and generates renovation visualizations with cost estimates.',
-      tags: ['fastapi', 'next.js', 'typescript', 'google gemini api', 'playwright'],
+      tags: ['fastapi', 'next.js', 'typescript', 'react', 'python', 'tailwindcss', 'google gemini api', 'playwright'],
       link: 'https://github.com/zishinew/hearth',
       image: hearthImage
     },
