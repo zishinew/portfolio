@@ -120,6 +120,14 @@
   transform: scale(1.1);
 }
 
+.github-arrow {
+  transition: transform 0.2s ease;
+}
+
+.project-card:hover .github-arrow {
+  transform: translateX(4px);
+}
+
 @media (max-width: 768px) {
   .project-card {
     padding: 1rem;
