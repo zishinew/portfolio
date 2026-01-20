@@ -5,6 +5,8 @@ import aiDark from '../../ai-dark.png'
 import fileLight from '../../file-light.png'
 import fileDark from '../../file-dark.png'
 import hearthImage from '../../hearth.png'
+import fryLight from '../../frymyresume_light.png'
+import fryDark from '../../frymyresume_dark.png'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import './Projects.css'
 import { useState, useEffect } from 'react'
@@ -28,6 +30,14 @@ function Projects() {
   }, [])
 
   const projects = [
+    {
+      title: 'frymyresume.cv',
+      description: 'full-stack job application simulator with AI resume critique, real internship search via SimplifyJobs, timed coding interviews with auto-grading, and live behavioral interviews using Gemini audio with WebSocket.',
+      tags: ['react', 'python', 'fastapi', 'gemini api', 'websocket', 'monaco editor', 'web speech api'],
+      site: 'https://frymyresume.cv',
+      github: 'https://github.com/zishinew/frymyresume.cv',
+      image: isDark ? fryDark : fryLight
+    },
     {
       title: 'hearth.',
       description: 'application for seniors that analyzes real estate listings to find accessibility barriers and generates renovation visualizations with cost estimates.',
@@ -64,21 +74,46 @@ function Projects() {
         <h2>projects</h2>
         <div className="projects-list">
         {projects.map((project, index) => (
-          <a href={project.link} key={index} className="project-card" target="_blank" rel="noopener noreferrer">
-            {project.image && <img src={project.image} alt={project.title} className="project-image" />}
-            <div className="project-content">
-              <div className="project-header">
-                <h3>{project.title}</h3>
-                <span className="arrow">→</span>
-              </div>
-              <p>{project.description}</p>
-              <div className="tags">
-                {project.tags.map((tag, i) => (
-                  <span key={i} className="tag">{tag}</span>
-                ))}
+          project.site ? (
+            <div key={index} className="project-card">
+              {project.image && <img src={project.image} alt={project.title} className="project-image" />}
+              <div className="project-content">
+                <div className="project-header">
+                  <h3>{project.title}</h3>
+                </div>
+                <p>{project.description}</p>
+                <div className="tags">
+                  {project.tags.map((tag, i) => (
+                    <span key={i} className="tag">{tag}</span>
+                  ))}
+                </div>
+                <div className="project-links">
+                  <a href={project.site} target="_blank" rel="noopener noreferrer" className="project-btn">
+                    Visit Site <span className="arrow">→</span>
+                  </a>
+                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="project-btn project-btn-secondary">
+                    GitHub <span className="arrow">→</span>
+                  </a>
+                </div>
               </div>
             </div>
-          </a>
+          ) : (
+            <a href={project.link} key={index} className="project-card" target="_blank" rel="noopener noreferrer">
+              {project.image && <img src={project.image} alt={project.title} className="project-image" />}
+              <div className="project-content">
+                <div className="project-header">
+                  <h3>{project.title}</h3>
+                  <span className="arrow">→</span>
+                </div>
+                <p>{project.description}</p>
+                <div className="tags">
+                  {project.tags.map((tag, i) => (
+                    <span key={i} className="tag">{tag}</span>
+                  ))}
+                </div>
+              </div>
+            </a>
+          )
         ))}
       </div>
       </div>
