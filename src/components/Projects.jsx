@@ -7,6 +7,8 @@ import fileDark from '../../file-dark.png'
 import hearthImage from '../../hearth.png'
 import fryLight from '../../frymyresume_light.png'
 import fryDark from '../../frymyresume_dark.png'
+import gifLight from '../../findmygif-light.png'
+import gifDark from '../../findmygif-dark.png'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import './Projects.css'
 import { useState, useEffect } from 'react'
@@ -37,6 +39,14 @@ function Projects() {
       site: 'https://frymyresume.cv',
       github: 'https://github.com/zishinew/frymyresume.cv',
       image: isDark ? fryDark : fryLight
+    },
+    {
+      title: 'findmygif',
+      description: 'AI-powered GIF finder that analyzes conversation screenshots using Gemini Vision to detect tone and context, then surfaces the perfect reaction GIF via Giphy with a RAG-based recommendation pipeline using Pinecone.',
+      tags: ['next.js', 'typescript', 'fastapi', 'python', 'gemini api', 'pinecone', 'giphy api'],
+      site: 'https://findmygif.vercel.app',
+      github: 'https://github.com/zishinew/findmygif',
+      image: isDark ? gifDark : gifLight
     },
     {
       title: 'hearth.',
