@@ -118,7 +118,7 @@ function Education() {
               href="https://uwaterloo.ca/"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 transition-opacity hover:opacity-65 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ac-ash"
+              className="group inline-flex items-center gap-2 transition-opacity hover:opacity-65 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ac-ash"
             >
               <Image
                 src="/University_of_Waterloo_seal.png"
@@ -127,7 +127,9 @@ function Education() {
                 height={250}
                 className="size-[1em] shrink-0 object-contain"
               />
-              <span>university of waterloo</span>
+              <span className="underline decoration-ac-steel/80 decoration-1 underline-offset-4 transition-colors group-hover:decoration-ac-halo">
+                university of waterloo
+              </span>
             </a>
           </h2>
           <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.3em] text-ac-ash">
@@ -254,10 +256,10 @@ function Contact() {
                 className="group flex items-baseline justify-between gap-4 py-4 transition-all duration-300 hover:translate-x-1 hover:text-ac-halo"
                 onMouseEnter={playHover}
               >
-                <span className="text-[10px] uppercase tracking-[0.3em] text-ac-ash transition-colors duration-300 group-hover:text-ac-frost">
+                <span className="text-[10px] uppercase tracking-[0.3em] text-ac-ash underline decoration-ac-steel/70 decoration-1 underline-offset-4 transition-colors duration-300 group-hover:text-ac-frost group-hover:decoration-ac-frost">
                   {contact.label}
                 </span>
-                <span className="text-right text-ac-fog transition-colors duration-300 group-hover:text-ac-halo">
+                <span className="text-right text-ac-fog underline decoration-ac-steel/70 decoration-1 underline-offset-4 transition-colors duration-300 group-hover:text-ac-halo group-hover:decoration-ac-halo">
                   {contact.value}
                 </span>
               </a>
