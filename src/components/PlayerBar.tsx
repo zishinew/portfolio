@@ -38,7 +38,7 @@ export default function PlayerBar() {
 
   return (
     <footer
-      className={`fixed inset-x-0 bottom-0 z-20 border-t border-ac-steel/70 bg-ac-ink/80 backdrop-blur-sm transition-[transform,opacity] duration-700 ease-out ${
+      className={`fixed inset-x-0 bottom-0 z-20 border-t border-ac-steel/70 bg-ac-ink/95 transition-[transform,opacity] duration-700 ease-out ${
         musicEnabled
           ? "translate-y-0 opacity-100"
           : "translate-y-full opacity-0"
@@ -85,7 +85,7 @@ export default function PlayerBar() {
             style={{ transform: `scaleX(${progress / 100})` }}
           />
           <div
-            className="absolute top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-ac-frost transition-[left] duration-100"
+            className="absolute top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-ac-frost"
             style={{ left: `${progress}%` }}
           />
           {isHydrated && (

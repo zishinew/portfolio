@@ -5,23 +5,32 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
 } from "react";
 
-interface MusicContextType {
+interface MusicControlsContextType {
   audioRef: React.RefObject<HTMLAudioElement | null>;
-  isPlaying: boolean;
-  currentTime: number;
-  duration: number;
   musicEnabled: boolean;
   togglePlayback: () => Promise<void>;
   seekTo: (time: number) => void;
   skipBy: (seconds: number) => void;
 }
 
-const MusicContext = createContext<MusicContextType | undefined>(undefined);
+interface MusicTimelineContextType {
+  isPlaying: boolean;
+  currentTime: number;
+  duration: number;
+}
+
+const MusicControlsContext = createContext<
+  MusicControlsContextType | undefined
+>(undefined);
+const MusicTimelineContext = createContext<
+  MusicTimelineContextType | undefined
+>(undefined);
 
 export function MusicProvider({
   children,
@@ -92,28 +101,49 @@ export function MusicProvider({
     [seekTo],
   );
 
+  const controls = useMemo(
+    () => ({
+      audioRef,
+      musicEnabled,
+      togglePlayback,
+      seekTo,
+      skipBy,
+    }),
+    [musicEnabled, seekTo, skipBy, togglePlayback],
+  );
+  const timeline = useMemo(
+    () => ({ isPlaying, currentTime, duration }),
+    [currentTime, duration, isPlaying],
+  );
+
   return (
-    <MusicContext.Provider
-      value={{
-        audioRef,
-        isPlaying,
-        currentTime,
-        duration,
-        musicEnabled,
-        togglePlayback,
-        seekTo,
-        skipBy,
-      }}
-    >
-      {children}
-    </MusicContext.Provider>
+    <MusicControlsContext.Provider value={controls}>
+      <MusicTimelineContext.Provider value={timeline}>
+        {children}
+      </MusicTimelineContext.Provider>
+    </MusicControlsContext.Provider>
   );
 }
 
-export function useMusic() {
-  const context = useContext(MusicContext);
+export function useMusicControls() {
+  const context = useContext(MusicControlsContext);
   if (!context) {
-    throw new Error("useMusic must be used within MusicProvider");
+    throw new Error("useMusicControls must be used within MusicProvider");
   }
   return context;
+}
+
+export function useMusicTimeline() {
+  const context = useContext(MusicTimelineContext);
+  if (!context) {
+    throw new Error("useMusicTimeline must be used within MusicProvider");
+  }
+  return context;
+}
+
+export function useMusic() {
+  return {
+    ...useMusicControls(),
+    ...useMusicTimeline(),
+  };
 }

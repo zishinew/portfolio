@@ -1,20 +1,6 @@
-/* Google fonts are loaded via <link> in app/layout.tsx —
-   Tailwind v4's PostCSS strips remote @import rules from here. */
 @import "tailwindcss";
 
 @theme {
-  --color-archive-bg: #0a0e1a;
-  --color-archive-blue: #7dd3fc;
-  --color-archive-lavender: #c4b5fd;
-  --color-archive-muted: #64748b;
-
-  /* dusk / soft-club palette */
-  --color-dusk-bg: #100b16;
-  --color-dusk-amber: #f0a868;
-  --color-dusk-rose: #e0899a;
-  --color-dusk-violet: #b79ce0;
-  --color-dusk-muted: #9a8ca0;
-
   /* archivecore — light / scanned-paper monochrome */
   --color-ac-void: #ffffff;  /* clean white bg */
   --color-ac-ink: #d5d3cd;   /* panel / plate */
@@ -26,9 +12,9 @@
   --color-ac-halo: #0d0f13;  /* darkest / display */
   --color-ac-sky: #7d99b8;   /* muted collage blue */
 
-  --font-garamond: 'EB Garamond', serif;
-  --font-mono: 'Space Mono', monospace;
-  --font-pixel: 'DotGothic16', monospace;
+  --font-garamond: var(--font-eb-garamond), Georgia, serif;
+  --font-mono: var(--font-space-mono), ui-monospace, monospace;
+  --font-pixel: var(--font-dot-gothic), ui-monospace, monospace;
 }
 
 html,
@@ -42,7 +28,7 @@ body {
 body {
   background-color: var(--color-ac-void);
   color: var(--color-ac-bone);
-  font-family: var(--font-garamond);
+  font-family: var(--font-eb-garamond), Georgia, serif;
   min-height: 100vh;
 }
 
@@ -51,74 +37,9 @@ body {
   color: var(--color-ac-void);
 }
 
-@keyframes duskDrift {
-  0%   { transform: translate(-8%, -6%) scale(1); }
-  33%  { transform: translate(9%, 6%) scale(1.18); }
-  66%  { transform: translate(-4%, 9%) scale(1.06); }
-  100% { transform: translate(-8%, -6%) scale(1); }
-}
-
-@keyframes duskDrift2 {
-  0%   { transform: translate(6%, 8%) scale(1.1); }
-  40%  { transform: translate(-9%, -4%) scale(1); }
-  70%  { transform: translate(4%, -8%) scale(1.2); }
-  100% { transform: translate(6%, 8%) scale(1.1); }
-}
-
-@keyframes softGlow {
-  0%, 100% { opacity: 0.55; transform: scale(1); }
-  50%      { opacity: 0.95; transform: scale(1.06); }
-}
-
-@keyframes softRise {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes progressFill {
-  from { width: 0%; }
-  to   { width: 100%; }
-}
-
-.animate-dusk-drift { animation: duskDrift 18s ease-in-out infinite; }
-.animate-dusk-drift-2 { animation: duskDrift2 22s ease-in-out infinite; }
-.animate-soft-glow { animation: softGlow 4.5s ease-in-out infinite; }
-.animate-soft-rise { animation: softRise 1.4s ease-out forwards; }
-
-.noise-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.03;
-  z-index: 100;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-}
-
 /* ===================================================================
    ARCHIVECORE — site-wide texture system
    =================================================================== */
-
-@keyframes grainShift {
-  0%   { transform: translate(0, 0); }
-  20%  { transform: translate(-4%, 3%); }
-  40%  { transform: translate(3%, -4%); }
-  60%  { transform: translate(-3%, -3%); }
-  80%  { transform: translate(4%, 2%); }
-  100% { transform: translate(0, 0); }
-}
-
-@keyframes bloomDrift {
-  0%, 100% { opacity: 0.5; transform: translate(0, 0) scale(1); }
-  50%      { opacity: 0.85; transform: translate(-2%, 3%) scale(1.08); }
-}
-
-@keyframes recBlink {
-  0%, 45%  { opacity: 1; }
-  50%, 95% { opacity: 0.15; }
-  100%     { opacity: 1; }
-}
-
-.animate-rec-blink { animation: recBlink 2s steps(1) infinite; }
 
 /* --- fixed full-screen texture layers (mounted in layout) --- */
 .fx-layer {
@@ -140,18 +61,13 @@ body {
 }
 
 .fx-grain {
-  position: absolute;
+  position: fixed;
   z-index: 70;
-  inset: -12%;
-  opacity: 0.35;
-  mix-blend-mode: multiply;
+  inset: 0;
+  opacity: 0.055;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 500 500' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-repeat: repeat;
-  background-size: 250px 250px;
-  mask-image: radial-gradient(ellipse 50% 40% at 20% 30%, black 0%, transparent 70%),
-              radial-gradient(ellipse 35% 50% at 75% 60%, black 0%, transparent 65%),
-              radial-gradient(ellipse 45% 30% at 55% 85%, black 0%, transparent 60%),
-              radial-gradient(ellipse 25% 35% at 85% 15%, black 0%, transparent 55%);
+  background-size: 220px 220px;
   pointer-events: none;
 }
 
@@ -173,83 +89,53 @@ body {
   border: 1px solid var(--color-ac-steel);
   background-color: var(--color-ac-ink);
   filter: grayscale(0.35) contrast(1.05);
-  transition: filter 0.5s ease, border-color 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: border-color 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .ac-plate:hover {
-  filter: grayscale(0) contrast(1.2) brightness(0.98);
   border-color: var(--color-ac-ash);
   transform: scale(1.02) rotate(-0.5deg);
 }
-.ac-plate::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.14;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
-}
-
-/* --- hover animations --- */
-.ac-hover-underline {
-  position: relative;
-}
-.ac-hover-underline::before {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 1px;
-  background: var(--color-ac-ash);
-  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.ac-hover-underline:hover::before {
-  width: 100%;
-}
-
-.ac-hover-slide-right {
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.ac-hover-slide-right:hover {
-  transform: translateX(4px);
-}
-
 /* --- glitch animations --- */
 @keyframes glitchAppear {
   0% {
     opacity: 0;
-    transform: scale(0.9) rotate(-0.5deg);
-    filter: blur(2px);
+    transform: translate3d(0, 8px, 0) scale(0.96) rotate(-0.5deg);
   }
   50% {
     opacity: 0.8;
-    transform: scale(1.02) rotate(0.3deg);
-    filter: blur(0px);
+    transform: translate3d(0, 0, 0) scale(1.02) rotate(0.3deg);
   }
   100% {
     opacity: 1;
-    transform: scale(1) rotate(0deg);
-    filter: blur(0px);
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
   }
 }
 
 .animate-glitch-appear {
-  animation: glitchAppear 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: glitchAppear 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@keyframes zoomIn {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(20);
+@keyframes promptGlitch {
+  0%, 88%, 92%, 100% { transform: translate3d(0, 0, 0); }
+  89% { transform: translate3d(-2px, 1px, 0); }
+  90% { transform: translate3d(2px, -1px, 0); }
+  91% { transform: translate3d(-1px, 0, 0); }
+}
+
+.animate-prompt-glitch {
+  animation: promptGlitch 2.2s steps(1, end) infinite;
+}
+
+@keyframes promptExit {
+  to {
     opacity: 0;
+    transform: translate3d(0, -4px, 0) scale(1.06);
   }
 }
 
-.animate-zoom-in {
-  animation: zoomIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+.animate-prompt-exit {
+  animation: promptExit 520ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  pointer-events: none;
 }
 
 @keyframes pageReveal {
@@ -264,13 +150,18 @@ body {
 }
 
 .animate-page-reveal {
-  animation: pageReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: pageReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .hero-preview-deck {
   contain: layout paint style;
   isolation: isolate;
   overflow: hidden;
+  transform-origin: center;
+}
+
+.hero-preview-deck[data-parallax="on"] {
+  will-change: transform;
 }
 
 .hero-preview-plate {
@@ -284,8 +175,6 @@ body {
   position: absolute;
   inset: 0;
   backface-visibility: hidden;
-  transition: opacity 240ms ease-out;
-  will-change: opacity;
 }
 
 .hero-preview-card[data-preview-state="current"] {
@@ -312,18 +201,8 @@ body {
   to   { opacity: 0; }
 }
 
-/* pointer-driven parallax on the hero collage photo — --parallax-x/-y are
-   written directly (no React re-render) by the effect in page.tsx, which
-   only enables this on fine pointers with no reduced-motion preference */
 .hero-preview-image {
-  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-[data-parallax="on"] .hero-preview-image {
-  transform:
-    translate3d(calc(var(--parallax-x, 0) * 16px), calc(var(--parallax-y, 0) * 16px), 0)
-    scale(1.08);
-  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .mechanical-flower-nav,
@@ -335,10 +214,6 @@ body {
 
 .mechanical-flower-nav {
   position: relative;
-}
-
-.portfolio-flower-menu {
-  will-change: transform;
 }
 
 .portfolio-live-layer {
@@ -383,13 +258,10 @@ body {
 
 .portfolio-content-stack {
   isolation: isolate;
-  transition:
-    filter 360ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 280ms ease-out;
+  transition: opacity 240ms ease-out;
 }
 
 .portfolio-section-layer[data-menu-active="true"] .portfolio-content-stack {
-  filter: blur(5px);
   opacity: 0.38;
   pointer-events: none;
   user-select: none;
@@ -406,7 +278,7 @@ body {
 .portfolio-live-content.is-incoming {
   position: relative;
   z-index: 2;
-  animation: portfolioContentIn 380ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both;
+  animation: portfolioContentIn 360ms cubic-bezier(0.22, 1, 0.36, 1) 120ms backwards;
 }
 
 .portfolio-live-content.is-settled {
@@ -415,32 +287,33 @@ body {
 }
 
 @keyframes portfolioContentOut {
-  from { opacity: 1; }
-  to   { opacity: 0; }
+  from { opacity: 1; transform: translate3d(0, 0, 0); }
+  to   { opacity: 0; transform: translate3d(0, -6px, 0); }
 }
 
 @keyframes portfolioContentIn {
   from {
     opacity: 0;
-    clip-path: inset(0 0 100% 0);
+    transform: translate3d(0, 12px, 0);
   }
   to {
     opacity: 1;
-    clip-path: inset(0 0 0 0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 .portfolio-flower-menu.is-home-positioned {
+  --home-flower-size: min(52vw, 1100px, 96svh);
   bottom: auto;
-  left: calc(max(1.25rem, calc(50vw - 36rem)) - 18vw);
-  top: calc(50% - 26vw);
-  width: 52vw;
-  height: 52vw;
+  left: calc(max(1.25rem, calc(50vw - 36rem)) - min(18vw, 380px));
+  top: 50%;
+  width: var(--home-flower-size);
+  height: var(--home-flower-size);
   min-width: 0;
   min-height: 0;
   max-width: none;
   max-height: none;
-  translate: none;
+  translate: 0 -50%;
 }
 
 @media (min-width: 40rem) {
@@ -466,11 +339,9 @@ body {
   transform: rotate(var(--flower-rotation, 90deg));
   transform-origin: center;
   transition: transform 560ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
 }
 
-/* Homepage-only frosted layer. It is clipped to the full flower silhouette,
-   so sharp collage/ASCII detail reads as sitting behind the fading petal ink. */
+/* Homepage-only translucent plate, clipped once to the static silhouette. */
 .mechanical-flower__glass-defs {
   position: absolute;
   overflow: hidden;
@@ -483,11 +354,9 @@ body {
   pointer-events: none;
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.34),
-    rgba(255, 255, 255, 0.12)
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0.18)
   );
-  -webkit-backdrop-filter: blur(6px) contrast(0.92);
-  backdrop-filter: blur(6px) contrast(0.92);
 }
 
 /* unmasked paper-colored flower silhouette rendered beneath the ink layer;
@@ -499,7 +368,6 @@ body {
   z-index: 1;
   opacity: 0.6;
   pointer-events: none;
-  will-change: auto; /* only the ink rotor stays permanently composited */
 }
 
 .mechanical-flower__ink {
@@ -509,23 +377,25 @@ body {
   height: 100%;
 }
 
-/* homepage hero: fade the inked flower into the paper at the edges.
-   two nested single-mask wrappers — one element with two mask layers +
-   mask-composite forces per-frame main-thread rasterization while the
-   rotor animates beneath it, which tanks the frame rate */
-.mechanical-flower__fade {
-  width: 100%;
-  height: 100%;
-}
-
-.mechanical-flower__fade--y {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 28%, black 72%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, black 28%, black 72%, transparent 100%);
-}
-
-.mechanical-flower__fade--x {
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 55%);
-  mask-image: linear-gradient(to right, transparent 0%, black 55%);
+.mechanical-flower__edge-wash {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.92) 0%,
+      rgba(255, 255, 255, 0.62) 24%,
+      transparent 62%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.72) 0%,
+      transparent 28%,
+      transparent 72%,
+      rgba(255, 255, 255, 0.72) 100%
+    );
 }
 
 .mechanical-flower {
@@ -698,17 +568,20 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .hero-preview-card,
-  .hero-preview-caption {
-    animation: none;
-    transition: none;
+  .animate-glitch-appear,
+  .animate-page-reveal,
+  .animate-prompt-glitch,
+  .animate-prompt-exit {
+    animation: none !important;
   }
 
-  .hero-preview-image {
-    transition: none;
+  .hero-preview-deck {
     transform: none !important;
+    will-change: auto;
   }
 
-  .mechanical-flower__rotor {
+  .mechanical-flower__rotor,
+  .mechanical-flower__label {
     transition: none;
   }
 
@@ -726,7 +599,7 @@ body {
 
   .portfolio-live-content {
     animation: none !important;
-    clip-path: none !important;
+    transform: none !important;
   }
 
   .portfolio-content-stack {
@@ -738,94 +611,22 @@ body {
   background-image: linear-gradient(to right, transparent, var(--color-ac-steel) 20%, var(--color-ac-steel) 80%, transparent);
 }
 
-/* --- archivecore reveal animations --- */
-@keyframes acFadeRise {
-  from { opacity: 0; transform: translateY(40px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes acFadeDrift {
-  from { opacity: 0; transform: translateY(30px) rotate(-2deg); }
-  to   { opacity: 1; transform: translateY(0) rotate(0deg); }
-}
-
-@keyframes acLineReveal {
-  from { transform: scaleX(0); }
-  to   { transform: scaleX(1); }
-}
-
-@keyframes acSlowFlicker {
-  0%, 100% { opacity: 1; }
-  92%      { opacity: 1; }
-  93%      { opacity: 0.7; }
-  94%      { opacity: 1; }
-  96%      { opacity: 0.85; }
-  97%      { opacity: 1; }
-}
-
-@keyframes acGentleSway {
-  0%, 100% { transform: rotate(-0.6deg); }
-  50%      { transform: rotate(0.6deg); }
-}
-
-@keyframes acScrollPulse {
-  0%, 100% { opacity: 0.4; transform: translate(-50%, 0); }
-  50%      { opacity: 1; transform: translate(-50%, 6px); }
-}
-
-@keyframes acHeroRise {
-  from { opacity: 0; transform: translateY(30px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.ac-hero-enter {
-  animation: acHeroRise 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  will-change: transform, opacity;
-}
-
-.ac-hero-enter-delay {
-  opacity: 0;
-  animation: acHeroRise 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
-  will-change: transform, opacity;
-}
-
 .ac-image-edge-fade {
-  mask-image: linear-gradient(to right, transparent 0%, black 42%, black 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 42%, black 100%);
+  isolation: isolate;
+  overflow: hidden;
 }
 
-.ac-reveal {
-  opacity: 0;
-}
-.ac-reveal.is-visible {
-  animation: acFadeRise 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  will-change: transform, opacity;
-}
-
-.ac-reveal-drift {
-  opacity: 0;
-}
-.ac-reveal-drift.is-visible {
-  animation: acFadeDrift 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  will-change: transform, opacity;
-}
-
-.ac-line-reveal {
-  transform-origin: left center;
-  transform: scaleX(0);
-}
-.ac-line-reveal.is-visible {
-  animation: acLineReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.ac-flicker {
-  animation: acSlowFlicker 8s ease-in-out infinite;
-}
-
-.ac-sway {
-  animation: acGentleSway 6s ease-in-out infinite;
-}
-
-.ac-scroll-hint {
-  animation: acScrollPulse 2.5s ease-in-out infinite;
+.ac-image-edge-fade::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: 3;
+  width: 44%;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.94) 16%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }

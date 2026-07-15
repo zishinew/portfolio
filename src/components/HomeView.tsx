@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import { useEffect, useRef, useState } from "react";
 import {
   portfolioSections,
@@ -9,34 +9,50 @@ import {
 
 const heroPreviews = portfolioSections;
 type HeroPreview = (typeof portfolioSections)[number];
+const HERO_SIZES =
+  "(max-width: 768px) 54vw, (max-width: 1200px) 52vw, (max-width: 2000px) 50vw, 960px";
+
+const optimizedPreviewProps = new Map(
+  heroPreviews.map((preview) => [
+    preview.id,
+    getImageProps({
+      src: preview.previewSrc,
+      alt: "",
+      fill: true,
+      sizes: HERO_SIZES,
+    }).props,
+  ]),
+);
 
 const heroPreviewLoadCache = new Map<string, Promise<void>>();
 
-function preloadHeroPreview(src: string) {
-  const cached = heroPreviewLoadCache.get(src);
+function preloadHeroPreview(preview: HeroPreview) {
+  const cached = heroPreviewLoadCache.get(preview.id);
 
   if (cached) {
     return cached;
   }
 
   const promise = new Promise<void>((resolve) => {
+    const imageProps = optimizedPreviewProps.get(preview.id);
     const image = new window.Image();
     image.decoding = "async";
+    image.fetchPriority = "low";
     image.onload = () => {
-      const decoded = image.decode?.();
-
-      if (decoded) {
-        void decoded.finally(resolve);
-        return;
-      }
-
-      resolve();
+      void image.decode().catch(() => {}).then(resolve);
     };
     image.onerror = () => resolve();
-    image.src = src;
+
+    if (imageProps?.sizes) {
+      image.sizes = imageProps.sizes;
+    }
+    if (imageProps?.srcSet) {
+      image.srcset = imageProps.srcSet;
+    }
+    image.src = String(imageProps?.src ?? preview.previewSrc);
   });
 
-  heroPreviewLoadCache.set(src, promise);
+  heroPreviewLoadCache.set(preview.id, promise);
   return promise;
 }
 
@@ -44,12 +60,12 @@ function HeroPreviewDeck({
   preview,
   sizes,
   isActive,
-  priority = false,
+  preload = false,
 }: {
   preview: HeroPreview;
   sizes: string;
   isActive: boolean;
-  priority?: boolean;
+  preload?: boolean;
 }) {
   const [visiblePreview, setVisiblePreview] = useState(preview);
   const [outgoingPreview, setOutgoingPreview] =
@@ -63,26 +79,37 @@ function HeroPreviewDeck({
     }
 
     let idleHandle: number | undefined;
+    let isCancelled = false;
     const timer = window.setTimeout(() => {
-      const preloadRemainingPreviews = () => {
-        heroPreviews.forEach((item) => {
-          if (item.id !== preview.id) {
-            void preloadHeroPreview(item.previewSrc);
+      const preloadAdjacentPreviews = async () => {
+        const currentIndex = heroPreviews.findIndex(
+          (item) => item.id === preview.id,
+        );
+        const adjacentPreviews = [
+          heroPreviews[(currentIndex - 1 + heroPreviews.length) % heroPreviews.length],
+          heroPreviews[(currentIndex + 1) % heroPreviews.length],
+        ];
+
+        for (const item of adjacentPreviews) {
+          if (isCancelled) {
+            return;
           }
-        });
+          await preloadHeroPreview(item);
+        }
       };
 
       if ("requestIdleCallback" in window) {
-        idleHandle = window.requestIdleCallback(preloadRemainingPreviews, {
+        idleHandle = window.requestIdleCallback(preloadAdjacentPreviews, {
           timeout: 2000,
         });
         return;
       }
 
-      preloadRemainingPreviews();
-    }, 1400);
+      void preloadAdjacentPreviews();
+    }, 900);
 
     return () => {
+      isCancelled = true;
       window.clearTimeout(timer);
       if (idleHandle !== undefined && "cancelIdleCallback" in window) {
         window.cancelIdleCallback(idleHandle);
@@ -91,13 +118,24 @@ function HeroPreviewDeck({
   }, [isActive, preview.id]);
 
   useEffect(() => {
+    if (!isActive) {
+      window.clearTimeout(outgoingTimeoutRef.current);
+      const syncFrame = window.requestAnimationFrame(() => {
+        previousPreviewRef.current = preview;
+        setVisiblePreview(preview);
+        setOutgoingPreview(null);
+      });
+
+      return () => window.cancelAnimationFrame(syncFrame);
+    }
+
     if (previousPreviewRef.current.id === preview.id) {
       return;
     }
 
     let isCancelled = false;
 
-    void preloadHeroPreview(preview.previewSrc).then(() => {
+    void preloadHeroPreview(preview).then(() => {
       if (isCancelled) {
         return;
       }
@@ -116,7 +154,7 @@ function HeroPreviewDeck({
       isCancelled = true;
       window.clearTimeout(outgoingTimeoutRef.current);
     };
-  }, [preview]);
+  }, [isActive, preview]);
 
   const renderPreview = (
     item: HeroPreview,
@@ -133,14 +171,17 @@ function HeroPreviewDeck({
           src={item.previewSrc}
           alt={state === "current" ? item.previewAlt : ""}
           fill
-          priority={priority && item.id === "about" && state === "current"}
+          preload={preload && item.id === "about" && state === "current"}
           sizes={sizes}
-          unoptimized
           className="hero-preview-image object-cover"
         />
       </div>
     </div>
   );
+
+  if (!isActive) {
+    return null;
+  }
 
   return (
     <>
@@ -160,15 +201,15 @@ export default function HomeView({
   const currentHeroPreview =
     heroPreviews.find((preview) => preview.id === activePreview) ??
     heroPreviews[0];
-  const heroImageRef = useRef<HTMLDivElement>(null);
+  const heroDeckRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isActive) {
       return;
     }
 
-    const container = heroImageRef.current;
-    if (!container) {
+    const deck = heroDeckRef.current;
+    if (!deck) {
       return;
     }
 
@@ -180,36 +221,68 @@ export default function HomeView({
       return;
     }
 
-    container.dataset.parallax = "on";
+    deck.dataset.parallax = "on";
 
     let frame = 0;
-    let latestX = 0;
-    let latestY = 0;
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let previousTime = 0;
+    let viewportWidth = window.innerWidth;
+    let viewportHeight = window.innerHeight;
 
-    const applyParallax = () => {
-      frame = 0;
-      container.style.setProperty("--parallax-x", latestX.toFixed(3));
-      container.style.setProperty("--parallax-y", latestY.toFixed(3));
-    };
+    const applyParallax = (time: number) => {
+      const elapsed = previousTime ? Math.min(time - previousTime, 50) : 16;
+      previousTime = time;
+      const blend = 1 - Math.exp(-elapsed / 70);
 
-    const handlePointerMove = (event: PointerEvent) => {
-      latestX = (event.clientX / window.innerWidth) * 2 - 1;
-      latestY = (event.clientY / window.innerHeight) * 2 - 1;
-      if (!frame) {
-        frame = requestAnimationFrame(applyParallax);
+      currentX += (targetX - currentX) * blend;
+      currentY += (targetY - currentY) * blend;
+      deck.style.transform = `translate3d(${(currentX * 14).toFixed(2)}px, ${(currentY * 14).toFixed(2)}px, 0) scale(1.06)`;
+
+      if (
+        Math.abs(targetX - currentX) > 0.001 ||
+        Math.abs(targetY - currentY) > 0.001
+      ) {
+        frame = window.requestAnimationFrame(applyParallax);
+      } else {
+        frame = 0;
+        previousTime = 0;
       }
     };
 
-    window.addEventListener("pointermove", handlePointerMove);
+    const handlePointerMove = (event: PointerEvent) => {
+      targetX = (event.clientX / viewportWidth) * 2 - 1;
+      targetY = (event.clientY / viewportHeight) * 2 - 1;
+      if (!frame) {
+        frame = window.requestAnimationFrame(applyParallax);
+      }
+    };
+
+    const handleResize = () => {
+      viewportWidth = window.innerWidth;
+      viewportHeight = window.innerHeight;
+    };
+
+    deck.style.transform = "translate3d(0, 0, 0) scale(1.06)";
+    window.addEventListener("pointermove", handlePointerMove, {
+      passive: true,
+    });
+    window.addEventListener("resize", handleResize, { passive: true });
+
     return () => {
       window.removeEventListener("pointermove", handlePointerMove);
-      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", handleResize);
+      window.cancelAnimationFrame(frame);
+      delete deck.dataset.parallax;
+      deck.style.removeProperty("transform");
     };
   }, [isActive]);
 
   return (
     <section className="relative h-full px-5 pt-20 sm:px-10 sm:pt-24">
-      <span className="ac-vertical pointer-events-none absolute right-5 top-28 hidden select-none font-pixel text-sm tracking-[0.4em] text-ac-ash/80 md:block">
+      <span className="ac-vertical pointer-events-none absolute right-5 top-28 hidden select-none font-mono text-sm tracking-[0.4em] text-ac-ash/80 md:block">
         日々の記録 — 未送信のもの
       </span>
 
@@ -229,16 +302,16 @@ export default function HomeView({
         </p>
       </div>
 
-      <div
-        ref={heroImageRef}
-        className="ac-image-edge-fade absolute inset-y-0 right-0 w-[54vw] md:w-[52vw] lg:w-[50vw] xl:w-[48vw]"
-      >
-        <div className="hero-preview-deck relative h-full w-full">
+      <div className="ac-image-edge-fade absolute inset-y-0 right-0 w-[54vw] max-w-[960px] md:w-[52vw] lg:w-[50vw] xl:w-[48vw]">
+        <div
+          ref={heroDeckRef}
+          className="hero-preview-deck relative h-full w-full"
+        >
           <HeroPreviewDeck
             preview={currentHeroPreview}
-            sizes="(max-width: 768px) 54vw, (max-width: 1200px) 52vw, 960px"
+            sizes={HERO_SIZES}
             isActive={isActive}
-            priority
+            preload
           />
         </div>
       </div>

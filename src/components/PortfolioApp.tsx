@@ -89,6 +89,7 @@ export default function PortfolioApp({
     }
 
     const end = flowerMenu.getBoundingClientRect();
+    flowerMenu.style.willChange = "transform";
     const animation = flowerMenu.animate(
       [
         {
@@ -106,7 +107,17 @@ export default function PortfolioApp({
       },
     );
 
-    return () => animation.cancel();
+    const clearCompositorHint = () => {
+      flowerMenu.style.removeProperty("will-change");
+    };
+
+    animation.onfinish = clearCompositorHint;
+    animation.oncancel = clearCompositorHint;
+
+    return () => {
+      animation.cancel();
+      clearCompositorHint();
+    };
   }, [isFlowerHomePositioned]);
 
   const showSection = useCallback(
@@ -247,14 +258,6 @@ export default function PortfolioApp({
           <section className="relative flex h-[100svh] items-center overflow-hidden px-5 pb-72 pt-24 sm:px-10 sm:pb-80 lg:px-12 lg:py-24 xl:px-16">
             <div
               className="portfolio-content-stack relative w-full max-w-5xl"
-              style={{
-                filter: isSubpageMenuActive ? "blur(5px)" : "none",
-                opacity: isSubpageMenuActive ? 0.38 : 1,
-                pointerEvents: isSubpageMenuActive ? "none" : "auto",
-                userSelect: isSubpageMenuActive ? "none" : "auto",
-                transition:
-                  "filter 360ms cubic-bezier(0.22, 1, 0.36, 1), opacity 280ms ease-out",
-              }}
             >
               {outgoingSection && (
                 <div

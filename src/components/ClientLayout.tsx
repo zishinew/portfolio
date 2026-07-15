@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AsciiArtStatic } from "@/components/ui/ascii-art";
 import BackgroundMusic from "@/components/BackgroundMusic";
 import { MusicProvider } from "@/components/MusicContext";
@@ -19,15 +19,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     effectsEnabled: false,
   });
   const [isRevealing, setIsRevealing] = useState(false);
-  const [showPrompt, setShowPrompt] = useState(false);
   const [showPreferencesPrompt, setShowPreferencesPrompt] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowPrompt(true);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
 
   const handleSoundChoice = (enabled: boolean) => {
     setSoundChoice(enabled);
@@ -52,13 +44,17 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <SoundProvider soundEnabled={audioPreferences.effectsEnabled}>
         <MusicProvider musicEnabled={audioPreferences.musicEnabled}>
           <SiteRevealProvider isRevealed={isRevealing}>
-            <BackgroundMusic />
+            <BackgroundMusic
+              shouldLoad={
+                soundChoice === true || audioPreferences.musicEnabled
+              }
+            />
 
             <div
               aria-hidden={!isRevealing}
               style={{ display: isRevealing ? undefined : "none" }}
             >
-              <PlayerBar />
+              {audioPreferences.musicEnabled && <PlayerBar />}
 
               {/* archivecore site-wide texture layers */}
               <div className="fx-layer fx-bloom" aria-hidden />
@@ -82,7 +78,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
               {children}
             </div>
 
-            {showPrompt && soundChoice === null && (
+            {soundChoice === null && (
               <SoundPrompt onChoice={handleSoundChoice} />
             )}
             {showPreferencesPrompt && (

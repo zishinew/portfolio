@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   memo,
@@ -230,7 +229,7 @@ function MechanicalFlower({
 
   return (
     <nav
-      className="mechanical-flower-nav"
+      className={`mechanical-flower-nav${edgeFade ? " is-edge-faded" : ""}`}
       aria-label="Portfolio sections"
       style={{ "--flower-rotation": `${selection.rotation}deg` } as CSSProperties}
     >
@@ -268,92 +267,110 @@ function MechanicalFlower({
         </>
       )}
 
-      {/* unmasked paper silhouette under the ink — damps fixed decals/textures
-          so only a faint ghost shows through edge-faded petals */}
-      <div
-        className="mechanical-flower__rotor mechanical-flower__silhouette"
-        aria-hidden
-      >
-        <svg className="mechanical-flower" viewBox="150 150 700 700">
-          {petals.map((petal) => (
-            <path
-              key={petal.href}
-              className="mechanical-flower__petal-backdrop"
-              d={PETAL_PATH}
-              transform={`rotate(${petal.rotation} 500 500)`}
+      {edgeFade && (
+        <div className="mechanical-flower__silhouette" aria-hidden>
+          <svg className="mechanical-flower" viewBox="150 150 700 700">
+            {petals.map((petal) => (
+              <path
+                key={petal.href}
+                className="mechanical-flower__petal-backdrop"
+                d={PETAL_PATH}
+                transform={`rotate(${petal.rotation} 500 500)`}
+              />
+            ))}
+            <circle
+              className="mechanical-flower__hub-gap"
+              cx="500"
+              cy="500"
+              r="58"
             />
-          ))}
-          <circle className="mechanical-flower__hub-gap" cx="500" cy="500" r="58" />
-        </svg>
-      </div>
+          </svg>
+        </div>
+      )}
 
       <div className="mechanical-flower__ink">
-        {/* nested single-mask wrappers — see .mechanical-flower__fade in globals.css */}
-        <div className={`mechanical-flower__fade${edgeFade ? " mechanical-flower__fade--y" : ""}`}>
-          <div className={`mechanical-flower__fade${edgeFade ? " mechanical-flower__fade--x" : ""}`}>
-            <div className="mechanical-flower__rotor">
-              <svg className="mechanical-flower" viewBox="150 150 700 700">
-                <g>
-                  {petals.map((petal, index) => (
-                    <Link
-                      key={petal.href}
-                      href={petal.href}
-                      data-section={petal.id}
-                      className={`mechanical-flower__link ${index === selection.index ? "is-selected" : ""}`}
-                      aria-label={petal.label}
-                      aria-current={index === routeIndex ? "page" : undefined}
-                      aria-disabled={index !== selection.index}
-                      tabIndex={index === selection.index ? 0 : -1}
-                      onClick={(event) => handlePetalClick(event, index)}
-                    >
-                      <g transform={`rotate(${petal.rotation} 500 500)`}>
-                        <g className="mechanical-flower__petal-content">
-                          <path
-                            className="mechanical-flower__petal-backdrop"
-                            d={PETAL_PATH}
-                          />
-                          <g className="mechanical-flower__petal-ink">
-                            <path
-                              className="mechanical-flower__petal"
-                              d={PETAL_PATH}
-                            />
-                            <path
-                              className="mechanical-flower__inner-line"
-                              d="M 500 452 L 500 365"
-                            />
-                            <circle
-                              className="mechanical-flower__inner-circle"
-                              cx="500"
-                              cy="345"
-                              r="19"
-                            />
-                          </g>
-                        </g>
-                        <text
-                          className="mechanical-flower__label"
-                          x="500"
-                          y="245"
-                          textAnchor="middle"
-                          style={
-                            {
-                              "--label-rotation": `${-(selection.rotation + petal.rotation)}deg`,
-                            } as CSSProperties
-                          }
-                        >
-                          {petal.label.toLowerCase()}
-                        </text>
+        <div className="mechanical-flower__rotor">
+          <svg className="mechanical-flower" viewBox="150 150 700 700">
+            <g>
+              {petals.map((petal, index) => (
+                <a
+                  key={petal.href}
+                  href={petal.href}
+                  data-section={petal.id}
+                  className={`mechanical-flower__link ${index === selection.index ? "is-selected" : ""}`}
+                  aria-label={petal.label}
+                  aria-current={index === routeIndex ? "page" : undefined}
+                  aria-disabled={index !== selection.index}
+                  tabIndex={index === selection.index ? 0 : -1}
+                  onClick={(event) => handlePetalClick(event, index)}
+                >
+                  <g transform={`rotate(${petal.rotation} 500 500)`}>
+                    <g className="mechanical-flower__petal-content">
+                      <path
+                        className="mechanical-flower__petal-backdrop"
+                        d={PETAL_PATH}
+                      />
+                      <g className="mechanical-flower__petal-ink">
+                        <path
+                          className="mechanical-flower__petal"
+                          d={PETAL_PATH}
+                        />
+                        <path
+                          className="mechanical-flower__inner-line"
+                          d="M 500 452 L 500 365"
+                        />
+                        <circle
+                          className="mechanical-flower__inner-circle"
+                          cx="500"
+                          cy="345"
+                          r="19"
+                        />
                       </g>
-                    </Link>
-                  ))}
+                    </g>
+                    <text
+                      className="mechanical-flower__label"
+                      x="500"
+                      y="245"
+                      textAnchor="middle"
+                      style={
+                        {
+                          "--label-rotation": `${-(selection.rotation + petal.rotation)}deg`,
+                        } as CSSProperties
+                      }
+                    >
+                      {petal.label.toLowerCase()}
+                    </text>
+                  </g>
+                </a>
+              ))}
 
-                  <circle className="mechanical-flower__hub-gap" cx="500" cy="500" r="58" />
-                  <circle className="mechanical-flower__hub" cx="500" cy="500" r="46" />
-                </g>
-              </svg>
-            </div>
-          </div>
+              <circle
+                className="mechanical-flower__hub-gap"
+                cx="500"
+                cy="500"
+                r="58"
+              />
+              <circle
+                className="mechanical-flower__hub"
+                cx="500"
+                cy="500"
+                r="46"
+              />
+            </g>
+          </svg>
         </div>
       </div>
+
+      {edgeFade && (
+        <div
+          className="mechanical-flower__edge-wash"
+          style={{
+            clipPath: `url(#${frostClipId})`,
+            WebkitClipPath: `url(#${frostClipId})`,
+          }}
+          aria-hidden
+        />
+      )}
 
       {isBrowser && isSiteRevealed &&
         createPortal(

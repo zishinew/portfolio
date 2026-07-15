@@ -88,7 +88,7 @@ function About() {
             src="/aboutme.png"
             alt="monochrome personal photo collage"
             fill
-            sizes="(min-width: 768px) 24vw, 70vw"
+            sizes="(min-width: 768px) 280px, 70vw"
             className="object-cover"
           />
         </div>
@@ -123,8 +123,9 @@ function Education() {
               <Image
                 src="/University_of_Waterloo_seal.png"
                 alt=""
-                width={250}
-                height={250}
+                width={32}
+                height={32}
+                sizes="32px"
                 className="size-[1em] shrink-0 object-contain"
               />
               <span className="underline decoration-ac-steel/80 decoration-1 underline-offset-4 transition-colors group-hover:decoration-ac-halo">
@@ -146,7 +147,7 @@ function Education() {
 
       <div className="hidden md:col-span-4 md:block">
         <div className="ac-plate relative ml-auto aspect-square w-full max-w-[240px]">
-          <Image src="/waterloo-preview.jpg" alt="campus building" fill sizes="20vw" className="object-cover" />
+          <Image src="/waterloo-preview.jpg" alt="campus building" fill sizes="240px" className="object-cover" />
         </div>
         <p className="mt-2 text-right font-mono text-[9px] uppercase tracking-[0.2em] text-ac-ash">
           campus_01.jpg
@@ -176,7 +177,7 @@ function Experiences() {
 
       <div className="hidden md:col-span-4 md:block">
         <div className="ac-plate relative ml-auto aspect-[3/4] w-full max-w-[240px]">
-          <Image src="/experiences.png" alt="experiences archive collage" fill sizes="20vw" className="object-cover" />
+          <Image src="/experiences.png" alt="experiences archive collage" fill sizes="240px" className="object-cover" />
         </div>
         <p className="mt-2 text-right font-mono text-[9px] uppercase tracking-[0.2em] text-ac-ash">
           experiences.png
@@ -218,7 +219,7 @@ function Projects() {
                 {project.tags}
               </p>
             </div>
-            <span className="font-mono text-sm text-ac-ash transition-all duration-300 group-hover:translate-x-1 group-hover:text-ac-frost">
+            <span className="font-mono text-sm text-ac-ash transition-[color,transform] duration-300 group-hover:translate-x-1 group-hover:text-ac-frost">
               ↗
             </span>
           </li>
@@ -227,7 +228,7 @@ function Projects() {
 
       <div className="hidden md:col-span-4 md:block">
         <div className="ac-plate relative ml-auto aspect-square w-4/5 rotate-1">
-          <Image src="/projects.png" alt="projects archive collage" fill sizes="22vw" className="object-cover" />
+          <Image src="/projects.png" alt="projects archive collage" fill sizes="320px" className="object-cover" />
         </div>
         <p className="mt-2 text-right font-mono text-[9px] uppercase tracking-[0.2em] text-ac-ash">
           projects.png
@@ -253,7 +254,7 @@ function Contact() {
                 href={contact.href}
                 target={contact.href.startsWith("mailto") ? undefined : "_blank"}
                 rel="noreferrer"
-                className="group flex items-baseline justify-between gap-4 py-4 transition-all duration-300 hover:translate-x-1 hover:text-ac-halo"
+                className="group flex items-baseline justify-between gap-4 py-4 transition-[color,transform] duration-300 hover:translate-x-1 hover:text-ac-halo"
                 onMouseEnter={playHover}
               >
                 <span className="text-[10px] uppercase tracking-[0.3em] text-ac-ash underline decoration-ac-steel/70 decoration-1 underline-offset-4 transition-colors duration-300 group-hover:text-ac-frost group-hover:decoration-ac-frost">
@@ -270,7 +271,7 @@ function Contact() {
 
       <div className="hidden md:col-span-4 md:col-start-9 md:block">
         <div className="ac-plate relative aspect-[3/4] w-full max-w-[240px]">
-          <Image src="/contact.png" alt="contact archive collage" fill sizes="20vw" className="object-cover" />
+          <Image src="/contact.png" alt="contact archive collage" fill sizes="240px" className="object-cover" />
         </div>
         <p className="mt-2 flex max-w-[240px] justify-between font-mono text-[9px] uppercase tracking-[0.2em] text-ac-ash">
           <span>fig. 02</span>

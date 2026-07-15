@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
-import { useMusic } from "./MusicContext";
+import { useMusicControls } from "./MusicContext";
 
-export default function BackgroundMusic() {
-  const { audioRef, musicEnabled } = useMusic();
+export default function BackgroundMusic({
+  shouldLoad,
+}: {
+  shouldLoad: boolean;
+}) {
+  const { audioRef, musicEnabled } = useMusicControls();
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -31,7 +35,11 @@ export default function BackgroundMusic() {
     play();
 
     return removeFallbackListeners;
-  }, [audioRef, musicEnabled]);
+  }, [audioRef, musicEnabled, shouldLoad]);
+
+  if (!shouldLoad) {
+    return null;
+  }
 
   return <audio ref={audioRef} src="/bg_music.mp3" preload="metadata" loop />;
 }
