@@ -36,10 +36,8 @@ function sectionFromPathname(pathname: string): PortfolioSection | null | undefi
   return segments[0];
 }
 
-function titleForSection(section: PortfolioSection | null) {
-  return section
-    ? `${getPortfolioSection(section).label.toLowerCase()} — zishine wang`
-    : "zishine wang — archive";
+function titleForSection() {
+  return "zishinew.com";
 }
 
 export default function PortfolioApp({
@@ -143,7 +141,7 @@ export default function PortfolioApp({
         );
       }
 
-      document.title = titleForSection(nextSection);
+      document.title = titleForSection();
     },
     [],
   );

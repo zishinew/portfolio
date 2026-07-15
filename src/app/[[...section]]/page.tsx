@@ -1,8 +1,6 @@
-import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PortfolioApp from "@/components/PortfolioApp";
 import {
-  getPortfolioSection,
   isPortfolioSection,
   portfolioSections,
   type PortfolioSection,
@@ -29,24 +27,6 @@ function readSection(
   }
 
   return segments[0];
-}
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ section?: string[] }>;
-}): Promise<Metadata> {
-  const section = readSection((await params).section);
-
-  if (!section) {
-    return {
-      title: "zishine wang — archive",
-    };
-  }
-
-  return {
-    title: `${getPortfolioSection(section).label.toLowerCase()} — zishine wang`,
-  };
 }
 
 export default async function Page({
