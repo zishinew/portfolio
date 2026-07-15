@@ -157,12 +157,26 @@ function MechanicalFlower({
 
       if (["arrowup", "arrowleft", "w", "a"].includes(key)) {
         event.preventDefault();
+        if (
+          target instanceof HTMLElement &&
+          target.closest("a, button, [role='button'], [role='link']") &&
+          !target.closest(".mechanical-flower-nav, .mechanical-flower__controls")
+        ) {
+          target.blur();
+        }
         changePetal(-1);
         return;
       }
 
       if (["arrowdown", "arrowright", "s", "d"].includes(key)) {
         event.preventDefault();
+        if (
+          target instanceof HTMLElement &&
+          target.closest("a, button, [role='button'], [role='link']") &&
+          !target.closest(".mechanical-flower-nav, .mechanical-flower__controls")
+        ) {
+          target.blur();
+        }
         changePetal(1);
         return;
       }
