@@ -133,10 +133,10 @@ function Education() {
             </a>
           </h2>
           <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.3em] text-ac-ash">
-            2023 — present
+            2025 — present
           </p>
           <p className="mt-3 text-lg leading-relaxed">
-            bachelor of mathematics — computer science option
+            bachelor of mathematics
           </p>
           <p className="mt-2 text-sm text-ac-fog">
             coursework in algorithms, data structures, linear algebra, and software engineering.
