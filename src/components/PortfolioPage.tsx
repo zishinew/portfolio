@@ -114,7 +114,21 @@ function Education() {
       <div className="md:col-span-8">
         <div className="border-l-2 border-ac-steel/60 pl-6">
           <h2 className="text-2xl lowercase leading-snug text-ac-halo">
-            university of waterloo
+            <a
+              href="https://uwaterloo.ca/"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 transition-opacity hover:opacity-65 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ac-ash"
+            >
+              <Image
+                src="/University_of_Waterloo_seal.png"
+                alt=""
+                width={250}
+                height={250}
+                className="size-[1em] shrink-0 object-contain"
+              />
+              <span>university of waterloo</span>
+            </a>
           </h2>
           <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.3em] text-ac-ash">
             2023 — present
