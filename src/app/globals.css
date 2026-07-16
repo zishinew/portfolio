@@ -742,6 +742,23 @@ body {
     top: 70%;
   }
 
+  .portfolio-flower-menu .mechanical-flower__label {
+    fill: var(--color-ac-void);
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: 0;
+    opacity: 0.9;
+    paint-order: stroke fill;
+    stroke: var(--color-ac-halo);
+    stroke-width: 1.5px;
+  }
+
+  .portfolio-flower-menu
+    .mechanical-flower__link.is-selected
+    .mechanical-flower__label {
+    opacity: 1;
+  }
+
   .home-intro-copy {
     width: 100%;
   }

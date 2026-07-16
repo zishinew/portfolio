@@ -50,7 +50,7 @@ export default function PortfolioApp({
 }: {
   initialSection: PortfolioSection | null;
 }) {
-  const { playSpecialClick } = useSoundEffects();
+  const { playHover, playClick, playSpecialClick } = useSoundEffects();
   const isSiteRevealed = useSiteReveal();
   const siteRevealPhase = useSiteRevealPhase();
   const { completePhase, finishReveal } = useSiteRevealControls();
@@ -248,6 +248,11 @@ export default function PortfolioApp({
     showSection(null, "push");
   }, [moveFlowerTo, showSection, startHomeReturn]);
 
+  const handleReturnHome = useCallback(() => {
+    playClick();
+    returnHome();
+  }, [playClick, returnHome]);
+
   const moveFlowerHome = useCallback(() => {
     moveFlowerTo(true);
     return SELECTED_PETAL_ANGLE;
@@ -431,17 +436,25 @@ export default function PortfolioApp({
       {!isHome && (
         <button
           type="button"
-          onClick={returnHome}
-          className="portfolio-back-button group fixed bottom-16 right-5 z-40 flex min-h-11 items-center gap-2 px-1 font-mono text-[9px] uppercase tracking-[0.28em] text-ac-ash transition-colors hover:text-ac-halo focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-ac-frost sm:right-8 lg:left-8 lg:right-auto lg:min-h-0 lg:px-0"
+          onMouseEnter={playHover}
+          onClick={handleReturnHome}
+          className="portfolio-back-button group fixed bottom-16 right-5 z-40 flex min-h-12 items-stretch overflow-hidden border border-ac-frost bg-ac-void font-mono uppercase text-ac-halo shadow-[4px_4px_0_var(--color-ac-steel)] transition-[color,background-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:bg-ac-frost hover:text-ac-void hover:shadow-[6px_6px_0_var(--color-ac-steel)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_var(--color-ac-steel)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ac-frost sm:right-8 lg:left-8 lg:right-auto"
           aria-label="Back to portfolio home"
         >
           <span
-            className="transition-transform duration-300 group-hover:-translate-x-1"
+            className="grid min-w-12 place-items-center border-r border-ac-frost bg-ac-frost px-3 text-lg leading-none text-ac-void transition-[color,background-color,transform] duration-200 group-hover:-translate-x-0.5 group-hover:bg-ac-void group-hover:text-ac-halo"
             aria-hidden
           >
             ←
           </span>
-          <span>back to home</span>
+          <span className="flex flex-col items-start justify-center gap-0.5 px-4 py-2 text-left">
+            <span className="font-pixel text-[8px] leading-none tracking-[0.18em] opacity-65">
+              return / 00
+            </span>
+            <span className="text-[10px] font-bold tracking-[0.22em] sm:text-[11px]">
+              back to home
+            </span>
+          </span>
         </button>
       )}
 
