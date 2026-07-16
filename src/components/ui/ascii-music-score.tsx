@@ -276,9 +276,9 @@ export const AsciiMusicScore = memo(function AsciiMusicScore({
     // every staff line and notation element rides the exact same curve.
     const staffMidY = (x: number, t: number) =>
       height / 2 +
-      0.45 * spacing * Math.sin((x / 1100) * TAU + t * 0.13) +
-      0.2 * spacing * Math.sin((x / 520) * TAU - t * 0.08 + 1.7) +
-      0.08 * spacing * Math.sin((x / 260) * TAU + t * 0.18 + 4.2);
+      0.45 * spacing * Math.sin((x / 1100) * TAU + t * 0.32) +
+      0.2 * spacing * Math.sin((x / 520) * TAU - t * 0.2 + 1.7) +
+      0.08 * spacing * Math.sin((x / 260) * TAU + t * 0.44 + 4.2);
 
     // --- endless score generation (a melodic random walk of measures) ---
 
@@ -396,7 +396,37 @@ export const AsciiMusicScore = memo(function AsciiMusicScore({
     let deckFadeEnd = Infinity;
     let lastDeckPollAt = -1;
 
+    // The treble-clef decal rides the same wave: translated by the staff's
+    // height and tilted by its slope at the clef's own x. Composed via the
+    // transform property, which stacks after Tailwind's standalone translate.
+    let clefElement: HTMLElement | null = null;
+
+    const syncClefTilt = (t: number) => {
+      if (!clefElement) {
+        return;
+      }
+      const clefCenterX = clefRight / 2;
+      // The wave dominates the lift so the clef visibly rides the swells;
+      // a small bob floats on top, and the tilt follows the local slope.
+      const lift =
+        (staffMidY(clefCenterX, t) - height / 2) * 1.15 +
+        0.06 * spacing * Math.sin(t * 1.1 + 0.7);
+      const slope =
+        (staffMidY(clefCenterX + 60, t) - staffMidY(clefCenterX - 60, t)) / 120;
+      const angle = Math.max(
+        -0.07,
+        Math.min(0.07, Math.atan(slope) * 0.45),
+      );
+      clefElement.style.transform = `translateY(${lift.toFixed(2)}px) rotate(${angle.toFixed(4)}rad)`;
+    };
+
     const measureDeck = () => {
+      if (!clefElement) {
+        clefElement = document.querySelector<HTMLElement>(".site-ascii-layer");
+        if (clefElement) {
+          clefElement.style.willChange = "transform";
+        }
+      }
       const rect = document
         .querySelector(".hero-preview-deck")
         ?.getBoundingClientRect();
@@ -656,9 +686,9 @@ export const AsciiMusicScore = memo(function AsciiMusicScore({
 
       // One staff line: dense dashes riding the wave, tildes on the swells.
       // Rendered to an offscreen strip, blitted five times into the staff
-      // canvas at the line offsets. The wave phase drifts slowly, so this
-      // bake only runs at 10Hz; each frame pays a single staff drawImage.
-      if (t - stripDrawnAt >= 0.1 || stripDrawnAt < 0) {
+      // canvas at the line offsets. The bake runs at 30Hz — enough for the
+      // wave's drift — and each frame pays a single staff drawImage.
+      if (t - stripDrawnAt >= 1 / 30 || stripDrawnAt < 0) {
         stripDrawnAt = t;
         stripContext.clearRect(0, 0, width, stripHeight);
         stripContext.textAlign = "center";
@@ -828,6 +858,7 @@ export const AsciiMusicScore = memo(function AsciiMusicScore({
 
       advance(delta / 1000);
       draw(simTime);
+      syncClefTilt(simTime);
       scheduleStep();
     };
 
@@ -842,10 +873,12 @@ export const AsciiMusicScore = memo(function AsciiMusicScore({
       animationFrame = 0;
     };
 
-    // Reduced motion shows one still of the score instead of an empty layer.
+    // Reduced motion shows one still of the score instead of an empty layer;
+    // the clef is posed once to match the frozen wave.
     const drawStaticFrame = () => {
       ensureElements();
       draw(simTime);
+      syncClefTilt(simTime);
     };
 
     const syncSize = () => {
@@ -972,6 +1005,10 @@ export const AsciiMusicScore = memo(function AsciiMusicScore({
       disposed = true;
       stopLoop();
       resizeObserver.disconnect();
+      if (clefElement) {
+        clefElement.style.transform = "";
+        clefElement.style.willChange = "";
+      }
       window.removeEventListener("pointermove", handlePointerMove);
       document.documentElement.removeEventListener(
         "pointerleave",

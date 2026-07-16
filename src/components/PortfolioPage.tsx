@@ -10,27 +10,27 @@ import {
 const projects = [
   {
     ref: "PRJ-001",
-    title: "untitled project one",
-    desc: "placeholder — a small tool that does one thing carefully. description pending.",
-    tags: "typescript · react",
+    title: "paddleon.ca",
+    desc: "kayaking spot finder and trip planer.",
+    tags: "supabase ·typescript · react",
   },
   {
     ref: "PRJ-002",
-    title: "untitled project two",
-    desc: "placeholder — a command-line thing, built to learn something new.",
-    tags: "rust · cli",
+    title: "snake game ai",
+    desc: "reinforcement learning model using dqn with PyTorch to automonously learn snake gameplay.",
+    tags: "python · pytorch",
   },
   {
     ref: "PRJ-003",
-    title: "untitled project three",
-    desc: "placeholder — an experiment with data, math leaking into code.",
-    tags: "python · numpy",
+    title: "findmygif",
+    desc: "find the perfect gif for your instagram reel comment, or response to your friends .",
+    tags: "next.js · typescript · react · fastapi",
   },
   {
     ref: "PRJ-004",
-    title: "untitled project four",
-    desc: "placeholder — a web app; forms, databases, the usual weather.",
-    tags: "next.js · postgres",
+    title: "frymyresume.cv",
+    desc: "helping students find jobs through AI-powered resume critique + a full internship interview pipeline ",
+    tags: "fastapi · react · typescript",
   },
 ] as const;
 
@@ -162,16 +162,16 @@ function Experiences() {
     <div className="grid gap-10 md:grid-cols-12">
       <div className="space-y-8 md:col-span-8">
         <div className="border-l-2 border-ac-steel/60 pl-6">
-          <h2 className="text-2xl lowercase leading-snug text-ac-halo">software developer</h2>
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.3em] text-ac-ash">2024 — present</p>
+          <h2 className="text-2xl lowercase leading-snug text-ac-halo">Software Engineer</h2>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.3em] text-ac-ash">July 2026 — August 2026</p>
           <p className="mt-3 text-sm text-ac-fog">
-            building tools and interfaces. working with typescript, react, and rust.
+            Building software for seniors to educate youth through conversations with AI.
           </p>
         </div>
         <div className="border-l-2 border-ac-steel/60 pl-6">
-          <h2 className="text-2xl lowercase leading-snug text-ac-halo">teaching assistant</h2>
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.3em] text-ac-ash">2024</p>
-          <p className="mt-3 text-sm text-ac-fog">helping students with algorithms and data structures.</p>
+          <h2 className="text-2xl lowercase leading-snug text-ac-halo">AI Engineer</h2>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.3em] text-ac-ash">May 2026 — July 2026</p>
+          <p className="mt-3 text-sm text-ac-fog">Developing and deploying AI models for survey analysis.</p>
         </div>
       </div>
 

@@ -14,6 +14,7 @@ import {
   portfolioSections,
   type PortfolioSection,
 } from "@/lib/portfolio";
+import { CherryBlossoms } from "@/components/ui/cherry-blossoms";
 
 const heroPreviews = portfolioSections;
 type HeroPreview = (typeof portfolioSections)[number];
@@ -349,7 +350,9 @@ export default function HomeView({
 
       currentX += (targetX - currentX) * blend;
       currentY += (targetY - currentY) * blend;
-      deck.style.transform = `translate3d(${(currentX * 14).toFixed(2)}px, ${(currentY * 14).toFixed(2)}px, 0) scale(1.06)`;
+      // Scale is oversized enough to cover the larger translate range below
+      // without exposing the deck's edges.
+      deck.style.transform = `translate3d(${(currentX * 26).toFixed(2)}px, ${(currentY * 26).toFixed(2)}px, 0) scale(1.11)`;
 
       if (
         Math.abs(targetX - currentX) > 0.001 ||
@@ -375,7 +378,7 @@ export default function HomeView({
       viewportHeight = window.innerHeight;
     };
 
-    deck.style.transform = "translate3d(0, 0, 0) scale(1.06)";
+    deck.style.transform = "translate3d(0, 0, 0) scale(1.11)";
     window.addEventListener("pointermove", handlePointerMove, {
       passive: true,
     });
@@ -413,6 +416,7 @@ export default function HomeView({
               preload
               onInitialReady={handleInitialHeroReady}
             />
+            <CherryBlossoms />
           </div>
         </div>
       </div>
