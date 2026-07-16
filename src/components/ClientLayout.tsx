@@ -8,6 +8,7 @@ import BackgroundMusic from "@/components/BackgroundMusic";
 import { MusicProvider } from "@/components/MusicContext";
 import PlayerBar from "@/components/PlayerBar";
 import SoundPrompt from "@/components/SoundPrompt";
+import OwnershipDisclaimer from "@/components/OwnershipDisclaimer";
 import AudioPreferencesPrompt, {
   type AudioPreferences,
 } from "@/components/AudioPreferencesPrompt";
@@ -38,18 +39,21 @@ const NEXT_REVEAL_PHASE: Record<
   SiteRevealPhase
 > = {
   background: "middle",
-  middle: "flower",
+  middle: "score",
+  score: "flower",
   flower: "foreground",
   foreground: "complete",
 };
 
 // Normal progression comes from each layer's completion event. These only
 // prevent an interrupted CSS animation from leaving the page hidden.
-const REVEAL_FALLBACK_MS: Record<AnimatedSiteRevealPhase, number> = {
-  background: 360,
-  middle: 2000,
-  flower: 620,
-  foreground: 800,
+const REVEAL_FALLBACK_MS: Partial<
+  Record<AnimatedSiteRevealPhase, number>
+> = {
+  background: 240,
+  score: 320,
+  flower: 440,
+  foreground: 520,
 };
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
@@ -61,6 +65,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const [revealPhase, setRevealPhase] =
     useState<SiteRevealPhase>("hidden");
   const [showPreferencesPrompt, setShowPreferencesPrompt] = useState(false);
+  const [showOwnershipDisclaimer, setShowOwnershipDisclaimer] = useState(false);
   const isAsciiReadyRef = useRef(false);
   const isRevealRequestedRef = useRef(false);
   const hasRevealStartedRef = useRef(false);
@@ -114,9 +119,14 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       return;
     }
 
+    const fallbackMs = REVEAL_FALLBACK_MS[revealPhase];
+    if (fallbackMs === undefined) {
+      return;
+    }
+
     const fallbackTimer = window.setTimeout(
       () => completeRevealPhase(revealPhase),
-      REVEAL_FALLBACK_MS[revealPhase],
+      fallbackMs,
     );
     return () => window.clearTimeout(fallbackTimer);
   }, [completeRevealPhase, revealPhase]);
@@ -130,14 +140,19 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     }
 
     setAudioPreferences({ musicEnabled: false, effectsEnabled: false });
-    requestReveal();
+    setShowOwnershipDisclaimer(true);
   };
 
   const handleAudioPreferences = (preferences: AudioPreferences) => {
     setAudioPreferences(preferences);
     setShowPreferencesPrompt(false);
-    requestReveal();
+    setShowOwnershipDisclaimer(true);
   };
+
+  const handleDisclaimerContinue = useCallback(() => {
+    setShowOwnershipDisclaimer(false);
+    requestReveal();
+  }, [requestReveal]);
 
   const isRevealVisible = revealPhase !== "hidden";
   const isRevealComplete = revealPhase === "complete";
@@ -145,6 +160,14 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     revealPhase === "hidden"
       ? "hidden"
       : revealPhase === "background"
+        ? "entering"
+        : "visible";
+  const scoreRevealState =
+    revealPhase === "hidden" ||
+    revealPhase === "background" ||
+    revealPhase === "middle"
+      ? "hidden"
+      : revealPhase === "score"
         ? "entering"
         : "visible";
 
@@ -186,7 +209,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
               className="pointer-events-none fixed -left-12 top-1/2 z-[1] aspect-[811/1368] w-[clamp(340px,40vw,640px)] -translate-y-1/2 select-none"
             />
             <AsciiMusicScoreLayer
-              revealState={backgroundRevealState}
+              revealState={scoreRevealState}
+              onRevealComplete={() => completeRevealPhase("score")}
               className="pointer-events-none fixed inset-0 z-[2] select-none"
             />
 
@@ -199,6 +223,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
             {soundChoice !== null &&
               !showPreferencesPrompt &&
+              !showOwnershipDisclaimer &&
               !isRevealVisible && (
                 <div
                   className="fixed inset-0 z-[90] bg-ac-void"
@@ -211,6 +236,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             )}
             {showPreferencesPrompt && (
               <AudioPreferencesPrompt onConfirm={handleAudioPreferences} />
+            )}
+            {showOwnershipDisclaimer && (
+              <OwnershipDisclaimer onContinue={handleDisclaimerContinue} />
             )}
           </SiteRevealProvider>
         </MusicProvider>

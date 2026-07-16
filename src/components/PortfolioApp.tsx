@@ -6,6 +6,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  type AnimationEvent as ReactAnimationEvent,
   type MouseEvent as ReactMouseEvent,
 } from "react";
 import HomeView from "@/components/HomeView";
@@ -311,9 +312,10 @@ export default function PortfolioApp({
   const flowerIntroState =
     siteRevealPhase === "hidden" ||
     siteRevealPhase === "background" ||
-    siteRevealPhase === "middle"
+    siteRevealPhase === "middle" ||
+    siteRevealPhase === "score"
       ? "hidden"
-      : siteRevealPhase === "flower" && isHome && !isHomeIntroComplete
+      : siteRevealPhase === "flower"
         ? "entering"
         : "visible";
 
@@ -322,9 +324,25 @@ export default function PortfolioApp({
       return;
     }
 
-    const revealFrame = window.requestAnimationFrame(finishReveal);
+    const revealFrame = window.requestAnimationFrame(() =>
+      completePhase("middle"),
+    );
     return () => window.cancelAnimationFrame(revealFrame);
-  }, [finishReveal, isHome, siteRevealPhase]);
+  }, [completePhase, isHome, siteRevealPhase]);
+
+  const handleSectionRevealEnd = useCallback(
+    (event: ReactAnimationEvent<HTMLDivElement>) => {
+      if (
+        !isHome &&
+        siteRevealPhase === "foreground" &&
+        event.target === event.currentTarget &&
+        event.animationName === "portfolioSectionIntro"
+      ) {
+        completePhase("foreground");
+      }
+    },
+    [completePhase, isHome, siteRevealPhase],
+  );
 
   useEffect(() => {
     if (!isHome || !isReturningHome) {
@@ -344,6 +362,7 @@ export default function PortfolioApp({
       !isHome ||
       siteRevealPhase === "background" ||
       siteRevealPhase === "middle" ||
+      siteRevealPhase === "score" ||
       siteRevealPhase === "hidden"
     ) {
       return;
@@ -402,6 +421,7 @@ export default function PortfolioApp({
         data-state={isHome ? "inactive" : "active"}
         data-menu-active={isSubpageMenuActive}
         aria-hidden={isHome}
+        onAnimationEnd={handleSectionRevealEnd}
       >
         <div className="portfolio-page-grid relative z-10 mx-auto grid h-[100svh] max-w-[1600px] overflow-hidden lg:grid-cols-[minmax(420px,42vw)_1fr]">
           <div className="portfolio-flower-panel relative hidden lg:block" aria-hidden />
@@ -433,30 +453,34 @@ export default function PortfolioApp({
         </div>
       </div>
 
-      {!isHome && (
-        <button
-          type="button"
-          onMouseEnter={playHover}
-          onClick={handleReturnHome}
-          className="portfolio-back-button group fixed bottom-16 right-5 z-40 flex min-h-12 items-stretch overflow-hidden border border-ac-frost bg-ac-void font-mono uppercase text-ac-halo shadow-[4px_4px_0_var(--color-ac-steel)] transition-[color,background-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:bg-ac-frost hover:text-ac-void hover:shadow-[6px_6px_0_var(--color-ac-steel)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_var(--color-ac-steel)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ac-frost sm:right-8 lg:left-8 lg:right-auto"
-          aria-label="Back to portfolio home"
+      <button
+        type="button"
+        onMouseEnter={playHover}
+        onClick={handleReturnHome}
+        className="portfolio-back-button group fixed bottom-16 right-5 z-40 flex min-h-11 isolate items-center text-ac-fog hover:text-ac-halo focus-visible:outline-none sm:right-8 lg:left-8 lg:right-auto"
+        data-visible={
+          !isHome &&
+          (siteRevealPhase === "foreground" ||
+            siteRevealPhase === "complete")
+        }
+        aria-label="Back to portfolio home"
+        aria-hidden={isHome}
+        tabIndex={isHome ? -1 : 0}
+        disabled={isHome}
+      >
+        <span
+          className="relative z-10 text-base leading-none transition-transform duration-200 group-hover:-translate-x-1 group-focus-visible:-translate-x-1"
+          aria-hidden
         >
-          <span
-            className="grid min-w-12 place-items-center border-r border-ac-frost bg-ac-frost px-3 text-lg leading-none text-ac-void transition-[color,background-color,transform] duration-200 group-hover:-translate-x-0.5 group-hover:bg-ac-void group-hover:text-ac-halo"
-            aria-hidden
-          >
-            ←
-          </span>
-          <span className="flex flex-col items-start justify-center gap-0.5 px-4 py-2 text-left">
-            <span className="font-pixel text-[8px] leading-none tracking-[0.18em] opacity-65">
-              return / 00
-            </span>
-            <span className="text-[10px] font-bold tracking-[0.22em] sm:text-[11px]">
-              back to home
-            </span>
-          </span>
-        </button>
-      )}
+          ←
+        </span>
+        <span
+          className="relative z-10 pl-2.5 font-garamond text-sm lowercase tracking-[0.04em] sm:text-base"
+          data-ascii-dispel={!isHome ? "" : undefined}
+        >
+          home
+        </span>
+      </button>
 
       <div
         ref={flowerMenuRef}

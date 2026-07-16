@@ -1,6 +1,11 @@
 "use client";
 
-import { memo, useEffect, useRef } from "react";
+import {
+  memo,
+  useEffect,
+  useRef,
+  type AnimationEvent as ReactAnimationEvent,
+} from "react";
 import { useMusicTimeline } from "@/components/MusicContext";
 
 const TAU = Math.PI * 2;
@@ -41,6 +46,7 @@ interface AsciiMusicScoreProps {
   playing?: boolean;
   staffColor?: string;
   noteColor?: string;
+  onRevealComplete?: () => void;
 }
 
 interface ScoreElement {
@@ -89,6 +95,7 @@ export const AsciiMusicScore = memo(function AsciiMusicScore({
   // The treble-clef decal draws in #44474d; the score sits just shy of it.
   staffColor = "#44474d",
   noteColor = "#44474d",
+  onRevealComplete,
 }: AsciiMusicScoreProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -1023,6 +1030,17 @@ export const AsciiMusicScore = memo(function AsciiMusicScore({
     };
   }, [noteColor, staffColor]);
 
+  const handleRevealAnimationEnd = (
+    event: ReactAnimationEvent<HTMLDivElement>,
+  ) => {
+    if (
+      event.target === event.currentTarget &&
+      event.animationName === "siteBackgroundReveal"
+    ) {
+      onRevealComplete?.();
+    }
+  };
+
   return (
     <div
       ref={containerRef}
@@ -1030,6 +1048,7 @@ export const AsciiMusicScore = memo(function AsciiMusicScore({
         .filter(Boolean)
         .join(" ")}
       data-reveal-state={revealState}
+      onAnimationEnd={handleRevealAnimationEnd}
       style={{ contain: "strict" }}
       aria-hidden
     >
@@ -1041,7 +1060,11 @@ export const AsciiMusicScore = memo(function AsciiMusicScore({
 export function AsciiMusicScoreLayer({
   className,
   revealState,
-}: Pick<AsciiMusicScoreProps, "className" | "revealState">) {
+  onRevealComplete,
+}: Pick<
+  AsciiMusicScoreProps,
+  "className" | "revealState" | "onRevealComplete"
+>) {
   // The timeline context ticks a few times per second during playback; the
   // memoized child bails out of those renders unless isPlaying itself flips.
   const { isPlaying } = useMusicTimeline();
@@ -1051,6 +1074,7 @@ export function AsciiMusicScoreLayer({
       className={className}
       revealState={revealState}
       playing={isPlaying}
+      onRevealComplete={onRevealComplete}
     />
   );
 }

@@ -6,6 +6,7 @@ export type SiteRevealPhase =
   | "hidden"
   | "background"
   | "middle"
+  | "score"
   | "flower"
   | "foreground"
   | "complete";

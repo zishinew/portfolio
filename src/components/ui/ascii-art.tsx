@@ -23,6 +23,9 @@ const REPEL_RADIUS_PX = 130;
 const REPEL_STRENGTH_PX = 34;
 const POINTER_EASE_SECONDS = 0.06;
 const REPEL_EASE_SECONDS = 0.16;
+const DISPEL_RADIUS_X_PX = 84;
+const DISPEL_RADIUS_Y_PX = 38;
+const DISPEL_EASE_SECONDS = 0.22;
 
 interface AsciiArtStaticProps {
   src: string;
@@ -228,6 +231,10 @@ export function AsciiArtStatic({
     let pointerSeeded = false;
     let pointerActive = false;
     let repelStrength = 0;
+    let dispelTargetStrength = 0;
+    let dispelStrength = 0;
+    let dispelClientX = 0;
+    let dispelClientY = 0;
 
     const reportReady = () => {
       if (disposed || hasReportedReady) {
@@ -381,6 +388,47 @@ export function AsciiArtStatic({
       });
 
       context.restore();
+
+      // Remove only the ASCII pixels behind protected UI labels. Because the
+      // canvas itself is erased, the site's real background remains visible
+      // instead of being approximated with a colored overlay.
+      if (dispelStrength > 0.001) {
+        const centerX = dispelClientX - rect.left;
+        const centerY = dispelClientY - rect.top;
+
+        context.save();
+        context.globalCompositeOperation = "destination-out";
+        context.translate(centerX, centerY);
+        context.scale(DISPEL_RADIUS_X_PX, DISPEL_RADIUS_Y_PX);
+
+        const gradient = context.createRadialGradient(0, 0, 0, 0, 0, 1);
+        gradient.addColorStop(
+          0,
+          `rgba(0, 0, 0, ${dispelStrength})`,
+        );
+        gradient.addColorStop(
+          0.32,
+          `rgba(0, 0, 0, ${dispelStrength * 0.98})`,
+        );
+        gradient.addColorStop(
+          0.56,
+          `rgba(0, 0, 0, ${dispelStrength * 0.78})`,
+        );
+        gradient.addColorStop(
+          0.76,
+          `rgba(0, 0, 0, ${dispelStrength * 0.36})`,
+        );
+        gradient.addColorStop(
+          0.9,
+          `rgba(0, 0, 0, ${dispelStrength * 0.1})`,
+        );
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+
+        context.fillStyle = gradient;
+        context.fillRect(-1, -1, 2, 2);
+        context.restore();
+      }
+
       reportReady();
     };
 
@@ -420,10 +468,17 @@ export function AsciiArtStatic({
       repelStrength +=
         ((near ? 1 : 0) - repelStrength) *
         (1 - Math.exp(-dt / REPEL_EASE_SECONDS));
+      dispelStrength +=
+        (dispelTargetStrength - dispelStrength) *
+        (1 - Math.exp(-dt / DISPEL_EASE_SECONDS));
 
       draw();
 
-      if (repelStrength > 0.01 || near) {
+      if (
+        repelStrength > 0.01 ||
+        near ||
+        Math.abs(dispelTargetStrength - dispelStrength) > 0.01
+      ) {
         effectFrame = window.requestAnimationFrame(effectStep);
       } else {
         effectTimestamp = 0;
@@ -455,6 +510,22 @@ export function AsciiArtStatic({
     const handlePointerGone = () => {
       pointerActive = false;
     };
+    const updateDispelTarget = () => {
+      const target = document.querySelector<HTMLElement>(
+        "[data-ascii-dispel]",
+      );
+
+      if (target) {
+        const targetRect = target.getBoundingClientRect();
+        dispelClientX = targetRect.left + targetRect.width / 2;
+        dispelClientY = targetRect.top + targetRect.height / 2;
+        dispelTargetStrength = 1;
+      } else {
+        dispelTargetStrength = 0;
+      }
+
+      wakeEffect();
+    };
     const handleVisibilityChange = () => {
       if (document.hidden) {
         window.cancelAnimationFrame(effectFrame);
@@ -470,7 +541,12 @@ export function AsciiArtStatic({
       handlePointerGone,
     );
     window.addEventListener("blur", handlePointerGone);
+    window.addEventListener("resize", updateDispelTarget, { passive: true });
     document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    const dispelObserver = new MutationObserver(updateDispelTarget);
+    dispelObserver.observe(document.body, { childList: true, subtree: true });
+    updateDispelTarget();
 
     const resizeObserver = new ResizeObserver(scheduleDraw);
     resizeObserver.observe(container);
@@ -504,6 +580,7 @@ export function AsciiArtStatic({
     return () => {
       disposed = true;
       resizeObserver.disconnect();
+      dispelObserver.disconnect();
       window.cancelAnimationFrame(animationFrame);
       window.cancelAnimationFrame(effectFrame);
       window.removeEventListener("pointermove", handlePointerMove);
@@ -512,6 +589,7 @@ export function AsciiArtStatic({
         handlePointerGone,
       );
       window.removeEventListener("blur", handlePointerGone);
+      window.removeEventListener("resize", updateDispelTarget);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [

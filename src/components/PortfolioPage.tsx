@@ -11,24 +11,28 @@ const projects = [
   {
     ref: "PRJ-001",
     title: "paddleon.ca",
-    desc: "kayaking spot finder and trip planer.",
-    tags: "supabase ·typescript · react",
+    href: "https://paddleon.ca",
+    desc: "kayaking spot finder and trip planner.",
+    tags: "fastapi · python ·supabase · typescript · react",
   },
   {
     ref: "PRJ-002",
     title: "snake game ai",
+    href: "https://github.com/zishinew/snake-game-ai",
     desc: "reinforcement learning model using dqn with PyTorch to automonously learn snake gameplay.",
     tags: "python · pytorch",
   },
   {
     ref: "PRJ-003",
     title: "findmygif",
+    href: "https://findmygif-jet.vercel.app/",
     desc: "find the perfect gif for your instagram reel comment, or response to your friends .",
     tags: "next.js · typescript · react · fastapi",
   },
   {
     ref: "PRJ-004",
     title: "frymyresume.cv",
+    href: "https://frymyresume.cv",
     desc: "helping students find jobs through AI-powered resume critique + a full internship interview pipeline ",
     tags: "fastapi · react · typescript",
   },
@@ -78,7 +82,7 @@ function About() {
           look around!
         </p>
         <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.3em] text-ac-ash">
-          currently — studying, building, archiving
+          currently — probably studying or building smth
         </p>
       </div>
 
@@ -188,7 +192,7 @@ function Experiences() {
 }
 
 function Projects() {
-  const { playHover, playClick } = useSoundEffects();
+  const { playHover } = useSoundEffects();
 
   return (
     <div className="grid gap-10 md:grid-cols-12">
@@ -196,32 +200,31 @@ function Projects() {
         {projects.map((project) => (
           <li
             key={project.ref}
-            className="group grid cursor-pointer grid-cols-[1fr_auto] items-baseline gap-x-3 border-t border-ac-steel/60 py-5 last:border-b sm:grid-cols-[auto_1fr_auto] sm:gap-x-5"
-            onMouseEnter={playHover}
-            onClick={(event) => {
-              const target = event.target;
-              if (target instanceof Element && target.closest("a[href]")) {
-                return;
-              }
-
-              playClick();
-            }}
+            className="border-t border-ac-steel/60 last:border-b"
           >
-            <span className="col-span-2 mb-2 font-pixel text-[10px] text-ac-ash transition-transform duration-300 group-hover:translate-x-1 sm:col-span-1 sm:mb-0 sm:text-[11px]">
-              {project.ref}
-            </span>
-            <div>
-              <h2 className="text-xl lowercase leading-snug transition-colors duration-300 group-hover:text-ac-halo sm:text-2xl">
-                {project.title}
-              </h2>
-              <p className="mt-1 max-w-lg text-sm text-ac-fog">{project.desc}</p>
-              <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.25em] text-ac-ash">
-                {project.tags}
-              </p>
-            </div>
-            <span className="font-mono text-sm text-ac-ash transition-[color,transform] duration-300 group-hover:translate-x-1 group-hover:text-ac-frost">
-              ↗
-            </span>
+            <a
+              href={project.href}
+              target="_blank"
+              rel="noreferrer"
+              onMouseEnter={playHover}
+              className="group grid grid-cols-[1fr_auto] items-baseline gap-x-3 py-5 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-ac-frost sm:grid-cols-[auto_1fr_auto] sm:gap-x-5"
+            >
+              <span className="col-span-2 mb-2 font-pixel text-[10px] text-ac-ash transition-transform duration-300 group-hover:translate-x-1 sm:col-span-1 sm:mb-0 sm:text-[11px]">
+                {project.ref}
+              </span>
+              <div>
+                <h2 className="text-xl lowercase leading-snug transition-colors duration-300 group-hover:text-ac-halo sm:text-2xl">
+                  {project.title}
+                </h2>
+                <p className="mt-1 max-w-lg text-sm text-ac-fog">{project.desc}</p>
+                <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.25em] text-ac-ash">
+                  {project.tags}
+                </p>
+              </div>
+              <span className="font-mono text-sm text-ac-ash transition-[color,transform] duration-300 group-hover:translate-x-1 group-hover:text-ac-frost">
+                ↗
+              </span>
+            </a>
           </li>
         ))}
       </ul>
