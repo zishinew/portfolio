@@ -254,10 +254,9 @@ export default function PortfolioApp({
     returnHome();
   }, [playClick, returnHome]);
 
-  const moveFlowerHome = useCallback(() => {
-    moveFlowerTo(true);
+  const keepFlowerCompact = useCallback(() => {
     return SELECTED_PETAL_ANGLE;
-  }, [moveFlowerTo]);
+  }, []);
 
   const handleLinkClickCapture = useCallback(
     (event: ReactMouseEvent<HTMLElement>) => {
@@ -490,7 +489,7 @@ export default function PortfolioApp({
         <MechanicalFlower
           introState={flowerIntroState}
           onIntroComplete={completeFlowerIntro}
-          onNavigate={moveFlowerHome}
+          onNavigate={keepFlowerCompact}
           onOpen={openSection}
           onPreviewChange={setActivePreview}
           selectedAngle={
