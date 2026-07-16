@@ -9,6 +9,7 @@ import {
   type AnimationEvent as ReactAnimationEvent,
   type MouseEvent as ReactMouseEvent,
 } from "react";
+import { flushSync } from "react-dom";
 import HomeView from "@/components/HomeView";
 import MechanicalFlower from "@/components/MechanicalFlower";
 import PortfolioSectionView from "@/components/PortfolioPage";
@@ -133,7 +134,11 @@ export default function PortfolioApp({
     flowerPositionAnimationRef.current?.cancel();
     flowerPositionAnimationRef.current = undefined;
     isFlowerHomePositionedRef.current = homePositioned;
-    setIsFlowerHomePositioned(homePositioned);
+
+    // Enter can interrupt the expansion between compositor frames. Commit the
+    // new layout and its reverse FLIP before yielding back to the browser so
+    // the large underlying home layout never gets a chance to paint alone.
+    flushSync(() => setIsFlowerHomePositioned(homePositioned));
   }, []);
 
   useLayoutEffect(() => {
