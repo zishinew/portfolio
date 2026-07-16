@@ -77,6 +77,7 @@ export default function PortfolioApp({
   const isFlowerHomePositionedRef = useRef(initialSection === null);
   const flowerMenuRef = useRef<HTMLDivElement>(null);
   const flowerStartRectRef = useRef<DOMRect | undefined>(undefined);
+  const flowerPositionAnimationRef = useRef<Animation | undefined>(undefined);
 
   const completeHomeIntro = useCallback(() => {
     const revealName = () => setIsHomeIntroComplete(true);
@@ -124,8 +125,13 @@ export default function PortfolioApp({
       return;
     }
 
-    flowerStartRectRef.current =
-      flowerMenuRef.current?.getBoundingClientRect();
+    const flowerMenu = flowerMenuRef.current;
+    flowerStartRectRef.current = flowerMenu?.getBoundingClientRect();
+
+    // Capture the interpolated frame before cancelling so an interrupted FLIP
+    // reverses from exactly where the flower is currently drawn.
+    flowerPositionAnimationRef.current?.cancel();
+    flowerPositionAnimationRef.current = undefined;
     isFlowerHomePositionedRef.current = homePositioned;
     setIsFlowerHomePositioned(homePositioned);
   }, []);
@@ -173,24 +179,36 @@ export default function PortfolioApp({
         easing: "cubic-bezier(0.33, 1, 0.68, 1)",
       },
     );
+    flowerPositionAnimationRef.current = animation;
 
     const clearCompositorHint = () => {
       flowerMenu.style.removeProperty("will-change");
     };
 
     animation.onfinish = () => {
+      if (flowerPositionAnimationRef.current !== animation) {
+        return;
+      }
+
+      flowerPositionAnimationRef.current = undefined;
       clearCompositorHint();
       if (isFlowerHomePositioned) {
         completeHomeReturn();
       }
     };
-    animation.oncancel = clearCompositorHint;
+    animation.oncancel = () => {
+      if (flowerPositionAnimationRef.current !== animation) {
+        return;
+      }
 
-    return () => {
-      animation.cancel();
+      flowerPositionAnimationRef.current = undefined;
       clearCompositorHint();
     };
   }, [completeHomeReturn, isFlowerHomePositioned]);
+
+  useEffect(() => {
+    return () => flowerPositionAnimationRef.current?.cancel();
+  }, []);
 
   const showSection = useCallback(
     (nextSection: PortfolioSection | null, historyMode: HistoryMode) => {
@@ -254,9 +272,10 @@ export default function PortfolioApp({
     returnHome();
   }, [playClick, returnHome]);
 
-  const keepFlowerCompact = useCallback(() => {
+  const moveFlowerHome = useCallback(() => {
+    moveFlowerTo(true);
     return SELECTED_PETAL_ANGLE;
-  }, []);
+  }, [moveFlowerTo]);
 
   const handleLinkClickCapture = useCallback(
     (event: ReactMouseEvent<HTMLElement>) => {
@@ -489,7 +508,7 @@ export default function PortfolioApp({
         <MechanicalFlower
           introState={flowerIntroState}
           onIntroComplete={completeFlowerIntro}
-          onNavigate={keepFlowerCompact}
+          onNavigate={moveFlowerHome}
           onOpen={openSection}
           onPreviewChange={setActivePreview}
           selectedAngle={
