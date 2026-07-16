@@ -5,15 +5,15 @@ import {
   memo,
   useCallback,
   useEffect,
-  useId,
   useState,
   useSyncExternalStore,
+  type AnimationEvent as ReactAnimationEvent,
   type CSSProperties,
   type MouseEvent,
 } from "react";
 import { createPortal } from "react-dom";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
-import { useSiteReveal } from "@/components/SiteRevealContext";
+import { useSiteRevealPhase } from "@/components/SiteRevealContext";
 import {
   portfolioSections,
   type PortfolioSection,
@@ -36,23 +36,22 @@ interface MechanicalFlowerProps {
   onPreviewChange?: (section: PortfolioSection) => void;
   onNavigate?: () => number | undefined;
   onOpen?: (section: PortfolioSection) => void;
-  spinOnOpen?: boolean;
   selectedAngle?: number;
-  /** fade the inked flower into the paper at the edges (homepage hero) */
-  edgeFade?: boolean;
+  introState?: "hidden" | "entering" | "visible";
+  onIntroComplete?: () => void;
 }
 
 function MechanicalFlower({
   onPreviewChange,
   onNavigate,
   onOpen,
-  spinOnOpen = false,
   selectedAngle = 90,
-  edgeFade = false,
+  introState = "visible",
+  onIntroComplete,
 }: MechanicalFlowerProps) {
-  const frostClipId = `flower-frost-${useId().replaceAll(":", "")}`;
   const { playClick, playSpecialClick } = useSoundEffects();
-  const isSiteRevealed = useSiteReveal();
+  const siteRevealPhase = useSiteRevealPhase();
+  const isInteractive = siteRevealPhase === "complete";
   const pathname = usePathname();
   const router = useRouter();
   const isBrowser = useSyncExternalStore(
@@ -86,7 +85,18 @@ function MechanicalFlower({
           selectedAngle - manualSelection.selectedAngle,
       }
     : routeSelection;
-  const selectedPetal = petals[selection.index];
+  const openPetalAtIndex = useCallback((index: number) => {
+    const petal = petals[index];
+    playSpecialClick();
+
+    if (onOpen) {
+      onOpen(petal.id);
+      return;
+    }
+
+    onPreviewChange?.(petal.id);
+    router.push(petal.href);
+  }, [onOpen, onPreviewChange, playSpecialClick, router]);
 
   const changePetal = useCallback((direction: -1 | 1) => {
     const nextSelectedAngle = onNavigate?.() ?? selectedAngle;
@@ -106,39 +116,15 @@ function MechanicalFlower({
   }, [onNavigate, onPreviewChange, pathname, playClick, selectedAngle, selection.index, selection.rotation]);
 
   const openSelectedPetal = useCallback(() => {
-    playSpecialClick();
-    onPreviewChange?.(selectedPetal.id);
-
-    if (spinOnOpen) {
-      setManualSelection({
-        pathname,
-        index: selection.index,
-        rotation: selection.rotation + 360,
-        selectedAngle,
-      });
-    }
-
-    if (onOpen) {
-      onOpen(selectedPetal.id);
-      return;
-    }
-    router.push(selectedPetal.href);
-  }, [
-    onOpen,
-    onPreviewChange,
-    pathname,
-    playSpecialClick,
-    router,
-    selectedAngle,
-    selectedPetal.href,
-    selectedPetal.id,
-    selection.index,
-    selection.rotation,
-    spinOnOpen,
-  ]);
+    openPetalAtIndex(selection.index);
+  }, [openPetalAtIndex, selection.index]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isInteractive) {
+        return;
+      }
+
       if (event.defaultPrevented || event.metaKey || event.altKey || event.ctrlKey) {
         return;
       }
@@ -183,7 +169,6 @@ function MechanicalFlower({
       if (event.key === "Enter") {
         if (
           target instanceof HTMLElement &&
-          !target.closest(".mechanical-flower-nav, .mechanical-flower__controls") &&
           target.closest("a, button, [role='button'], [role='link']")
         ) {
           return;
@@ -196,12 +181,17 @@ function MechanicalFlower({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [changePetal, openSelectedPetal]);
+  }, [changePetal, isInteractive, openSelectedPetal]);
 
   const handlePetalClick = (
     event: MouseEvent<HTMLAnchorElement>,
     index: number,
   ) => {
+    if (!isInteractive) {
+      event.preventDefault();
+      return;
+    }
+
     if (
       event.button !== 0 ||
       event.metaKey ||
@@ -212,83 +202,48 @@ function MechanicalFlower({
       return;
     }
 
+    event.preventDefault();
+
     if (index !== selection.index) {
-      event.preventDefault();
-      return;
+      const baseTargetRotation = selectedAngle - petals[index].rotation;
+      const rawDelta = baseTargetRotation - selection.rotation;
+      const shortestDelta =
+        ((((rawDelta + 180) % 360) + 360) % 360) - 180;
+
+      setManualSelection({
+        pathname,
+        index,
+        rotation: selection.rotation + shortestDelta,
+        selectedAngle,
+      });
     }
 
-    if (onOpen) {
-      event.preventDefault();
-      openSelectedPetal();
-      return;
-    }
+    openPetalAtIndex(index);
+  };
 
-    playClick();
-    onPreviewChange?.(selectedPetal.id);
+  const handleIntroAnimationEnd = (
+    event: ReactAnimationEvent<HTMLDivElement>,
+  ) => {
+    if (
+      event.target === event.currentTarget &&
+      event.animationName === "homeFlowerIntro"
+    ) {
+      onIntroComplete?.();
+    }
   };
 
   return (
     <nav
-      className={`mechanical-flower-nav${edgeFade ? " is-edge-faded" : ""}`}
+      className="mechanical-flower-nav"
       aria-label="Portfolio sections"
+      aria-hidden={introState === "hidden"}
       style={{ "--flower-rotation": `${selection.rotation}deg` } as CSSProperties}
     >
-      {edgeFade && (
-        <>
-          <svg
-            className="mechanical-flower__glass-defs"
-            width="0"
-            height="0"
-            aria-hidden
-            focusable="false"
-          >
-            <defs>
-              <clipPath id={frostClipId} clipPathUnits="objectBoundingBox">
-                <g transform="scale(0.0014285714) translate(-150 -150)">
-                  {petals.map((petal) => (
-                    <path
-                      key={petal.href}
-                      d={PETAL_PATH}
-                      transform={`rotate(${petal.rotation} 500 500)`}
-                    />
-                  ))}
-                </g>
-              </clipPath>
-            </defs>
-          </svg>
-          <div
-            className="mechanical-flower__glass"
-            style={{
-              clipPath: `url(#${frostClipId})`,
-              WebkitClipPath: `url(#${frostClipId})`,
-            }}
-            aria-hidden
-          />
-        </>
-      )}
-
-      {edgeFade && (
-        <div className="mechanical-flower__silhouette" aria-hidden>
-          <svg className="mechanical-flower" viewBox="150 150 700 700">
-            {petals.map((petal) => (
-              <path
-                key={petal.href}
-                className="mechanical-flower__petal-backdrop"
-                d={PETAL_PATH}
-                transform={`rotate(${petal.rotation} 500 500)`}
-              />
-            ))}
-            <circle
-              className="mechanical-flower__hub-gap"
-              cx="500"
-              cy="500"
-              r="58"
-            />
-          </svg>
-        </div>
-      )}
-
-      <div className="mechanical-flower__ink">
+      <div
+        className={`mechanical-flower__ink${introState === "entering" ? " is-intro-entering" : ""}`}
+        data-intro-state={introState}
+        onAnimationEnd={handleIntroAnimationEnd}
+      >
         <div className="mechanical-flower__rotor">
           <svg className="mechanical-flower" viewBox="150 150 700 700">
             <g>
@@ -300,8 +255,8 @@ function MechanicalFlower({
                   className={`mechanical-flower__link ${index === selection.index ? "is-selected" : ""}`}
                   aria-label={petal.label}
                   aria-current={index === routeIndex ? "page" : undefined}
-                  aria-disabled={index !== selection.index}
-                  tabIndex={index === selection.index ? 0 : -1}
+                  aria-disabled={!isInteractive}
+                  tabIndex={isInteractive ? 0 : -1}
                   onClick={(event) => handlePetalClick(event, index)}
                 >
                   <g transform={`rotate(${petal.rotation} 500 500)`}>
@@ -361,18 +316,7 @@ function MechanicalFlower({
         </div>
       </div>
 
-      {edgeFade && (
-        <div
-          className="mechanical-flower__edge-wash"
-          style={{
-            clipPath: `url(#${frostClipId})`,
-            WebkitClipPath: `url(#${frostClipId})`,
-          }}
-          aria-hidden
-        />
-      )}
-
-      {isBrowser && isSiteRevealed &&
+      {isBrowser && isInteractive &&
         createPortal(
           <div className="mechanical-flower__controls" aria-label="Change selected petal">
             <p className="mechanical-flower__prompt">

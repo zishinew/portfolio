@@ -38,9 +38,14 @@ export default function AudioPreferencesPrompt({
       audioRef.current?.pause();
     }
 
+    const exitDelay = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches
+      ? 0
+      : 520;
     exitTimerRef.current = window.setTimeout(
       () => onConfirm({ musicEnabled, effectsEnabled }),
-      520,
+      exitDelay,
     );
   };
 

@@ -38,7 +38,7 @@ export default function PlayerBar() {
 
   return (
     <footer
-      className={`fixed inset-x-0 bottom-0 z-20 border-t border-ac-steel/70 bg-ac-ink/95 transition-[transform,opacity] duration-700 ease-out ${
+      className={`animate-site-chrome fixed inset-x-0 bottom-0 z-20 border-t border-ac-steel/70 bg-ac-ink/95 transition-[transform,opacity] duration-700 ease-out ${
         musicEnabled
           ? "translate-y-0 opacity-100"
           : "translate-y-full opacity-0"

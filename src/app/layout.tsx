@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout";
-import { DotGothic16, EB_Garamond, Space_Mono } from "next/font/google";
+import { EB_Garamond, Space_Mono } from "next/font/google";
 
 const garamond = EB_Garamond({
   subsets: ["latin"],
@@ -14,12 +14,6 @@ const spaceMono = Space_Mono({
   weight: "400",
   variable: "--font-space-mono",
 });
-const dotGothic = DotGothic16({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-dot-gothic",
-});
-
 export const metadata: Metadata = {
   title: "zishinew.com",
   description:
@@ -34,7 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${garamond.variable} ${spaceMono.variable} ${dotGothic.variable}`}
+      className={`${garamond.variable} ${spaceMono.variable}`}
     >
       <body>
         <ClientLayout>{children}</ClientLayout>

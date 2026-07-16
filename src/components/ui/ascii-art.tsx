@@ -1,6 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import {
+  useEffect,
+  useRef,
+  type AnimationEvent as ReactAnimationEvent,
+} from "react";
 
 const ASCII_CHARSETS = {
   standard: " .,:;i1tfLCG08@",
@@ -12,6 +16,14 @@ const ASCII_CHARSETS = {
 type CharsetPreset = keyof typeof ASCII_CHARSETS;
 type ObjectFit = "cover" | "contain" | "fill";
 
+// Cursor repulsion: glyphs near a fine pointer are pushed radially away with
+// a squared falloff and ease back once the cursor moves on, mirroring the
+// music score's dispersal. The rAF loop only runs while the effect is live.
+const REPEL_RADIUS_PX = 130;
+const REPEL_STRENGTH_PX = 34;
+const POINTER_EASE_SECONDS = 0.06;
+const REPEL_EASE_SECONDS = 0.16;
+
 interface AsciiArtStaticProps {
   src: string;
   resolution?: number;
@@ -22,6 +34,9 @@ interface AsciiArtStaticProps {
   fontFamily?: string;
   className?: string;
   objectFit?: ObjectFit;
+  revealState?: "hidden" | "entering" | "visible";
+  onReady?: () => void;
+  onRevealComplete?: () => void;
 }
 
 const rowCache = new Map<string, Promise<string[]>>();
@@ -55,6 +70,7 @@ function createAsciiRows({
   const rowsPromise = new Promise<string[]>((resolve, reject) => {
     const image = new window.Image();
     image.decoding = "async";
+    image.fetchPriority = "high";
 
     image.onload = () => {
       const sampleCanvas = document.createElement("canvas");
@@ -157,7 +173,10 @@ function createAsciiRows({
       resolve(rows);
     };
 
-    image.onerror = () => reject(new Error(`Unable to load ${src}`));
+    image.onerror = () => {
+      rowCache.delete(cacheKey);
+      reject(new Error(`Unable to load ${src}`));
+    };
     image.src = src;
   });
 
@@ -175,6 +194,9 @@ export function AsciiArtStatic({
   fontFamily = "monospace",
   className,
   objectFit = "cover",
+  revealState = "visible",
+  onReady,
+  onRevealComplete,
 }: AsciiArtStaticProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -189,7 +211,32 @@ export function AsciiArtStatic({
 
     let animationFrame = 0;
     let disposed = false;
+    let hasReportedReady = false;
     let rows: string[] | undefined;
+
+    const finePointerQuery = window.matchMedia("(pointer: fine)");
+    const reducedMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+
+    let effectFrame = 0;
+    let effectTimestamp = 0;
+    let pointerTargetX = 0;
+    let pointerTargetY = 0;
+    let pointerClientX = 0;
+    let pointerClientY = 0;
+    let pointerSeeded = false;
+    let pointerActive = false;
+    let repelStrength = 0;
+
+    const reportReady = () => {
+      if (disposed || hasReportedReady) {
+        return;
+      }
+
+      hasReportedReady = true;
+      onReady?.();
+    };
 
     const draw = () => {
       animationFrame = 0;
@@ -255,13 +302,86 @@ export function AsciiArtStatic({
       context.save();
       context.scale(horizontalScale, 1);
 
+      // While the cursor is near, rows crossing its radius are split and the
+      // characters inside it drawn one by one, pushed radially away. All
+      // other rows keep the fast batched path.
+      const rect = canvas.getBoundingClientRect();
+      const localX = pointerClientX - rect.left;
+      const localY = pointerClientY - rect.top;
+      const fieldLive =
+        repelStrength > 0.01 &&
+        localX > -REPEL_RADIUS_PX &&
+        localX < width + REPEL_RADIUS_PX &&
+        localY > -REPEL_RADIUS_PX &&
+        localY < height + REPEL_RADIUS_PX;
+      const minRow = Math.max(
+        0,
+        Math.floor((localY - REPEL_RADIUS_PX) / characterHeight),
+      );
+      const maxRow = Math.min(
+        rows.length - 1,
+        Math.ceil((localY + REPEL_RADIUS_PX) / characterHeight),
+      );
+      const minColumn = Math.max(
+        0,
+        Math.floor((localX - REPEL_RADIUS_PX) / characterWidth),
+      );
+      const maxColumn = Math.min(
+        columns - 1,
+        Math.ceil((localX + REPEL_RADIUS_PX) / characterWidth),
+      );
+
       rows.forEach((row, index) => {
-        if (row.trim().length > 0) {
+        if (row.trim().length === 0) {
+          return;
+        }
+
+        if (!fieldLive || index < minRow || index > maxRow) {
           context.fillText(row, 0, index * characterHeight);
+          return;
+        }
+
+        const y = index * characterHeight;
+        const leftSlice = row.slice(0, minColumn);
+        const rightSlice = row.slice(maxColumn + 1);
+        if (leftSlice.trim().length > 0) {
+          context.fillText(leftSlice, 0, y);
+        }
+        if (rightSlice.trim().length > 0) {
+          context.fillText(rightSlice, (maxColumn + 1) * glyphWidth, y);
+        }
+
+        const cellCenterY = y + characterHeight / 2;
+        for (let column = minColumn; column <= maxColumn; column += 1) {
+          const glyph = row[column];
+          if (glyph === " " || glyph === undefined) {
+            continue;
+          }
+
+          const relX = (column + 0.5) * characterWidth - localX;
+          const relY = cellCenterY - localY;
+          const distanceSq = relX * relX + relY * relY;
+          let dx = 0;
+          let dy = 0;
+          if (distanceSq < REPEL_RADIUS_PX * REPEL_RADIUS_PX && distanceSq > 0) {
+            const distance = Math.sqrt(distanceSq);
+            const falloff = 1 - distance / REPEL_RADIUS_PX;
+            const push =
+              repelStrength * REPEL_STRENGTH_PX * falloff * falloff;
+            dx = (relX / distance) * push;
+            dy = (relY / distance) * push;
+          }
+
+          context.fillText(
+            glyph,
+            column * glyphWidth + dx / horizontalScale,
+            y + dy,
+          );
         }
       });
 
       context.restore();
+      reportReady();
     };
 
     const scheduleDraw = () => {
@@ -270,32 +390,129 @@ export function AsciiArtStatic({
       }
     };
 
+    // The dispersal loop runs only while the cursor is near the decal (or
+    // the field is still easing out); it then settles on a static frame.
+    const effectStep = (timestamp: number) => {
+      effectFrame = 0;
+
+      if (disposed) {
+        return;
+      }
+
+      const delta =
+        effectTimestamp === 0
+          ? 16.7
+          : Math.min(timestamp - effectTimestamp, 100);
+      effectTimestamp = timestamp;
+      const dt = delta / 1000;
+
+      const pointerBlend = 1 - Math.exp(-dt / POINTER_EASE_SECONDS);
+      pointerClientX += (pointerTargetX - pointerClientX) * pointerBlend;
+      pointerClientY += (pointerTargetY - pointerClientY) * pointerBlend;
+
+      const rect = canvas.getBoundingClientRect();
+      const near =
+        pointerActive &&
+        pointerTargetX > rect.left - REPEL_RADIUS_PX &&
+        pointerTargetX < rect.right + REPEL_RADIUS_PX &&
+        pointerTargetY > rect.top - REPEL_RADIUS_PX &&
+        pointerTargetY < rect.bottom + REPEL_RADIUS_PX;
+      repelStrength +=
+        ((near ? 1 : 0) - repelStrength) *
+        (1 - Math.exp(-dt / REPEL_EASE_SECONDS));
+
+      draw();
+
+      if (repelStrength > 0.01 || near) {
+        effectFrame = window.requestAnimationFrame(effectStep);
+      } else {
+        effectTimestamp = 0;
+        scheduleDraw();
+      }
+    };
+
+    const wakeEffect = () => {
+      if (!effectFrame && !document.hidden) {
+        effectTimestamp = 0;
+        effectFrame = window.requestAnimationFrame(effectStep);
+      }
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!finePointerQuery.matches || reducedMotionQuery.matches) {
+        return;
+      }
+      pointerTargetX = event.clientX;
+      pointerTargetY = event.clientY;
+      if (!pointerSeeded) {
+        pointerSeeded = true;
+        pointerClientX = pointerTargetX;
+        pointerClientY = pointerTargetY;
+      }
+      pointerActive = true;
+      wakeEffect();
+    };
+    const handlePointerGone = () => {
+      pointerActive = false;
+    };
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        window.cancelAnimationFrame(effectFrame);
+        effectFrame = 0;
+        effectTimestamp = 0;
+      }
+    };
+    window.addEventListener("pointermove", handlePointerMove, {
+      passive: true,
+    });
+    document.documentElement.addEventListener(
+      "pointerleave",
+      handlePointerGone,
+    );
+    window.addEventListener("blur", handlePointerGone);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     const resizeObserver = new ResizeObserver(scheduleDraw);
     resizeObserver.observe(container);
 
-    void createAsciiRows({
-      src,
-      resolution,
-      charset: resolveCharset(charset),
-      inverted,
-      objectFit,
-    })
-      .then((nextRows) => {
-        if (disposed) {
-          return;
-        }
-
-        rows = nextRows;
-        scheduleDraw();
+    const loadRows = () => {
+      void createAsciiRows({
+        src,
+        resolution,
+        charset: resolveCharset(charset),
+        inverted,
+        objectFit,
       })
-      .catch(() => {
-        // The artwork is decorative; a failed texture should not block the UI.
-      });
+        .then((nextRows) => {
+          if (disposed) {
+            return;
+          }
+
+          rows = nextRows;
+          scheduleDraw();
+        })
+        .catch(() => {
+          // The artwork is decorative; a failed texture should not block the UI.
+          reportReady();
+        });
+    };
+
+    // This mounts behind the sound prompt, so prepare it before any visible
+    // homepage animation rather than racing the foreground during reveal.
+    loadRows();
 
     return () => {
       disposed = true;
       resizeObserver.disconnect();
       window.cancelAnimationFrame(animationFrame);
+      window.cancelAnimationFrame(effectFrame);
+      window.removeEventListener("pointermove", handlePointerMove);
+      document.documentElement.removeEventListener(
+        "pointerleave",
+        handlePointerGone,
+      );
+      window.removeEventListener("blur", handlePointerGone);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [
     backgroundColor,
@@ -306,13 +523,31 @@ export function AsciiArtStatic({
     objectFit,
     resolution,
     src,
+    onReady,
   ]);
+
+  const handleRevealAnimationEnd = (
+    event: ReactAnimationEvent<HTMLDivElement>,
+  ) => {
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+
+    if (event.animationName === "siteBackgroundReveal") {
+      onRevealComplete?.();
+    }
+  };
 
   return (
     <div
       ref={containerRef}
-      className={["overflow-hidden", className].filter(Boolean).join(" ")}
+      className={["site-ascii-layer overflow-hidden", className]
+        .filter(Boolean)
+        .join(" ")}
+      data-reveal-state={revealState}
+      onAnimationEnd={handleRevealAnimationEnd}
       style={{ backgroundColor, contain: "strict" }}
+      aria-hidden
     >
       <canvas
         ref={canvasRef}

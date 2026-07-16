@@ -72,7 +72,7 @@ export function MusicProvider({
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("durationchange", handleLoadedMetadata);
     };
-  }, []);
+  }, [musicEnabled]);
 
   const togglePlayback = useCallback(async () => {
     const audio = audioRef.current;

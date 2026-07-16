@@ -20,7 +20,15 @@ export default function SoundPrompt({ onChoice }: SoundPromptProps) {
     }
 
     setIsExiting(true);
-    exitTimerRef.current = window.setTimeout(() => onChoice(soundOn), 520);
+    const exitDelay = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches
+      ? 0
+      : 520;
+    exitTimerRef.current = window.setTimeout(
+      () => onChoice(soundOn),
+      exitDelay,
+    );
   };
 
   return (

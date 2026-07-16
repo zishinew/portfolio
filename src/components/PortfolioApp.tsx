@@ -13,6 +13,11 @@ import MechanicalFlower from "@/components/MechanicalFlower";
 import PortfolioSectionView from "@/components/PortfolioPage";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
 import {
+  useSiteReveal,
+  useSiteRevealControls,
+  useSiteRevealPhase,
+} from "@/components/SiteRevealContext";
+import {
   getPortfolioSection,
   isPortfolioSection,
   type PortfolioSection,
@@ -46,6 +51,9 @@ export default function PortfolioApp({
   initialSection: PortfolioSection | null;
 }) {
   const { playSpecialClick } = useSoundEffects();
+  const isSiteRevealed = useSiteReveal();
+  const siteRevealPhase = useSiteRevealPhase();
+  const { completePhase, finishReveal } = useSiteRevealControls();
   const [activeSection, setActiveSection] =
     useState<PortfolioSection | null>(initialSection);
   const activeSectionRef = useRef<PortfolioSection | null>(initialSection);
@@ -56,6 +64,11 @@ export default function PortfolioApp({
   const [activePreview, setActivePreview] = useState<PortfolioSection>(
     initialSection ?? "about",
   );
+  const [isHomeIntroComplete, setIsHomeIntroComplete] = useState(
+    initialSection !== null,
+  );
+  const [isReturningHome, setIsReturningHome] = useState(false);
+  const isReturningHomeRef = useRef(false);
 
   const [isFlowerHomePositioned, setIsFlowerHomePositioned] = useState(
     initialSection === null,
@@ -63,6 +76,47 @@ export default function PortfolioApp({
   const isFlowerHomePositionedRef = useRef(initialSection === null);
   const flowerMenuRef = useRef<HTMLDivElement>(null);
   const flowerStartRectRef = useRef<DOMRect | undefined>(undefined);
+
+  const completeHomeIntro = useCallback(() => {
+    const revealName = () => setIsHomeIntroComplete(true);
+
+    if (document.fonts?.ready) {
+      void document.fonts.ready.then(revealName);
+      return;
+    }
+
+    revealName();
+  }, []);
+
+  const completeHomeReturn = useCallback(() => {
+    const revealName = () => {
+      if (!isReturningHomeRef.current) {
+        return;
+      }
+
+      isReturningHomeRef.current = false;
+      setIsReturningHome(false);
+      setIsHomeIntroComplete(true);
+    };
+
+    if (document.fonts?.ready) {
+      void document.fonts.ready.then(revealName);
+      return;
+    }
+
+    revealName();
+  }, []);
+
+  const startHomeReturn = useCallback(() => {
+    isReturningHomeRef.current = true;
+    setIsReturningHome(true);
+    setIsHomeIntroComplete(false);
+  }, []);
+
+  const completeFlowerIntro = useCallback(() => {
+    completeHomeIntro();
+    completePhase("flower");
+  }, [completeHomeIntro, completePhase]);
 
   const moveFlowerTo = useCallback((homePositioned: boolean) => {
     if (isFlowerHomePositionedRef.current === homePositioned) {
@@ -81,10 +135,22 @@ export default function PortfolioApp({
     flowerStartRectRef.current = undefined;
 
     if (!flowerMenu || !start) {
+      if (isFlowerHomePositioned && isReturningHomeRef.current) {
+        const revealFrame = window.requestAnimationFrame(
+          completeHomeReturn,
+        );
+        return () => window.cancelAnimationFrame(revealFrame);
+      }
       return;
     }
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      if (isFlowerHomePositioned && isReturningHomeRef.current) {
+        const revealFrame = window.requestAnimationFrame(
+          completeHomeReturn,
+        );
+        return () => window.cancelAnimationFrame(revealFrame);
+      }
       return;
     }
 
@@ -111,14 +177,19 @@ export default function PortfolioApp({
       flowerMenu.style.removeProperty("will-change");
     };
 
-    animation.onfinish = clearCompositorHint;
+    animation.onfinish = () => {
+      clearCompositorHint();
+      if (isFlowerHomePositioned) {
+        completeHomeReturn();
+      }
+    };
     animation.oncancel = clearCompositorHint;
 
     return () => {
       animation.cancel();
       clearCompositorHint();
     };
-  }, [isFlowerHomePositioned]);
+  }, [completeHomeReturn, isFlowerHomePositioned]);
 
   const showSection = useCallback(
     (nextSection: PortfolioSection | null, historyMode: HistoryMode) => {
@@ -159,18 +230,23 @@ export default function PortfolioApp({
 
   const openSection = useCallback(
     (nextSection: PortfolioSection) => {
+      isReturningHomeRef.current = false;
+      setIsReturningHome(false);
+      setIsHomeIntroComplete(true);
+      finishReveal();
       setActivePreview(nextSection);
       moveFlowerTo(false);
       showSection(nextSection, "push");
     },
-    [moveFlowerTo, showSection],
+    [finishReveal, moveFlowerTo, showSection],
   );
 
   const returnHome = useCallback(() => {
-    setActivePreview("about");
+    startHomeReturn();
+    setActivePreview(activeSectionRef.current ?? "about");
     moveFlowerTo(true);
     showSection(null, "push");
-  }, [moveFlowerTo, showSection]);
+  }, [moveFlowerTo, showSection, startHomeReturn]);
 
   const moveFlowerHome = useCallback(() => {
     moveFlowerTo(true);
@@ -206,6 +282,8 @@ export default function PortfolioApp({
 
       if (nextSection) {
         setActivePreview(nextSection);
+      } else if (activeSectionRef.current !== null) {
+        startHomeReturn();
       }
       moveFlowerTo(nextSection === null);
       showSection(nextSection, "none");
@@ -213,7 +291,7 @@ export default function PortfolioApp({
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [moveFlowerTo, showSection]);
+  }, [moveFlowerTo, showSection, startHomeReturn]);
 
   useEffect(() => {
     return () => window.clearTimeout(contentTimerRef.current);
@@ -225,12 +303,75 @@ export default function PortfolioApp({
     ? getPortfolioSection(activeSection)
     : null;
 
+  const flowerIntroState =
+    siteRevealPhase === "hidden" ||
+    siteRevealPhase === "background" ||
+    siteRevealPhase === "middle"
+      ? "hidden"
+      : siteRevealPhase === "flower" && isHome && !isHomeIntroComplete
+        ? "entering"
+        : "visible";
+
+  useEffect(() => {
+    if (isHome || siteRevealPhase !== "middle") {
+      return;
+    }
+
+    const revealFrame = window.requestAnimationFrame(finishReveal);
+    return () => window.cancelAnimationFrame(revealFrame);
+  }, [finishReveal, isHome, siteRevealPhase]);
+
+  useEffect(() => {
+    if (!isHome || !isReturningHome) {
+      return;
+    }
+
+    // The FLIP completion is the normal handoff; this covers interruption.
+    const fallbackTimer = window.setTimeout(completeHomeReturn, 900);
+    return () => window.clearTimeout(fallbackTimer);
+  }, [completeHomeReturn, isHome, isReturningHome]);
+
+  useEffect(() => {
+    if (
+      isHomeIntroComplete ||
+      isReturningHome ||
+      !isSiteRevealed ||
+      !isHome ||
+      siteRevealPhase === "background" ||
+      siteRevealPhase === "middle" ||
+      siteRevealPhase === "hidden"
+    ) {
+      return;
+    }
+
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      siteRevealPhase === "foreground" ||
+      siteRevealPhase === "complete"
+    ) {
+      const revealFrame = window.requestAnimationFrame(completeHomeIntro);
+      return () => window.cancelAnimationFrame(revealFrame);
+    }
+
+    // Animation events are the primary handoff; this only covers interruption.
+    const fallbackTimer = window.setTimeout(completeHomeIntro, 650);
+    return () => window.clearTimeout(fallbackTimer);
+  }, [
+    completeHomeIntro,
+    isHome,
+    isHomeIntroComplete,
+    isReturningHome,
+    isSiteRevealed,
+    siteRevealPhase,
+  ]);
+
   return (
     <main
       className="portfolio-app relative h-[100svh] w-full overflow-hidden font-garamond text-ac-bone"
+      data-site-reveal-phase={siteRevealPhase}
       onClickCapture={handleLinkClickCapture}
     >
-      <header className="pointer-events-none fixed inset-x-0 top-0 z-20 flex items-center justify-between px-5 py-4 font-mono text-[10px] uppercase tracking-[0.25em] text-ac-ash sm:px-8">
+      <header className="site-intro-chrome pointer-events-none fixed inset-x-0 top-0 z-20 flex items-center justify-between px-5 py-4 font-mono text-[10px] uppercase tracking-[0.25em] text-ac-ash sm:px-8">
         <span aria-hidden />
         <span className="font-pixel text-[12px] normal-case tracking-normal">
           {current ? `${current.number} / 05` : "©2007"}
@@ -243,7 +384,12 @@ export default function PortfolioApp({
         aria-hidden={!isHome}
         style={{ zIndex: "auto" }}
       >
-        <HomeView activePreview={activePreview} isActive={isHome} />
+        <HomeView
+          activePreview={activePreview}
+          isActive={isHome}
+          isIntroReady={isHomeIntroComplete}
+          isReturningHome={isReturningHome}
+        />
       </div>
 
       <div
@@ -305,11 +451,11 @@ export default function PortfolioApp({
         aria-label="Portfolio menu"
       >
         <MechanicalFlower
-          edgeFade={isFlowerHomePositioned}
+          introState={flowerIntroState}
+          onIntroComplete={completeFlowerIntro}
           onNavigate={moveFlowerHome}
           onOpen={openSection}
           onPreviewChange={setActivePreview}
-          spinOnOpen={isHome}
           selectedAngle={
             SELECTED_PETAL_ANGLE
           }

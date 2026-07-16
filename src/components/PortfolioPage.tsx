@@ -245,7 +245,7 @@ function Contact() {
     <div className="grid gap-10 md:grid-cols-12">
       <div className="md:col-span-7">
         <p className="mb-8 max-w-md text-lg leading-relaxed">
-          the archive accepts correspondence. send word through any of the channels below.
+          Get in contact! Send word through any of the channels below.
         </p>
         <ul className="font-mono text-sm">
           {contacts.map((contact) => (
