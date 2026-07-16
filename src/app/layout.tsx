@@ -15,9 +15,13 @@ const spaceMono = Space_Mono({
   variable: "--font-space-mono",
 });
 export const metadata: Metadata = {
-  title: "zishinew.com",
+  title: "zishine",
   description:
     "zishine wang — software developer, mathematics @ university of waterloo",
+  icons: {
+    icon: "/siteicon.png",
+    apple: "/siteicon.png",
+  },
 };
 
 export default function RootLayout({

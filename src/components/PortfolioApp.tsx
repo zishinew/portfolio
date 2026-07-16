@@ -43,7 +43,7 @@ function sectionFromPathname(pathname: string): PortfolioSection | null | undefi
 }
 
 function titleForSection() {
-  return "zishinew.com";
+  return "zishine";
 }
 
 export default function PortfolioApp({
