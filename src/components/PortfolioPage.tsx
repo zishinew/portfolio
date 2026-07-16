@@ -167,15 +167,41 @@ function Experiences() {
       <div className="space-y-8 md:col-span-8">
         <div className="border-l-2 border-ac-steel/60 pl-6">
           <h2 className="text-2xl lowercase leading-snug text-ac-halo">Software Engineer</h2>
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.3em] text-ac-ash">July 2026 — August 2026</p>
+          <div className="mt-2 flex items-center gap-2">
+            <span className="grid size-5 shrink-0 place-items-center">
+              <Image
+                src="/healthcarejobagencylogo.png"
+                alt=""
+                width={20}
+                height={20}
+                sizes="20px"
+                className="max-h-5 max-w-5 object-contain"
+              />
+            </span>
+            <p className="text-sm leading-tight text-ac-fog">healthcarejob.agency</p>
+          </div>
+          <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.3em] text-ac-ash">July 2026 — August 2026</p>
           <p className="mt-3 text-sm text-ac-fog">
-            Building software for seniors to educate youth through conversations with AI.
+            Building software for seniors to share their stories and educate youth through conversations with AI.
           </p>
         </div>
         <div className="border-l-2 border-ac-steel/60 pl-6">
           <h2 className="text-2xl lowercase leading-snug text-ac-halo">AI Engineer</h2>
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.3em] text-ac-ash">May 2026 — July 2026</p>
-          <p className="mt-3 text-sm text-ac-fog">Developing and deploying AI models for survey analysis.</p>
+          <div className="mt-2 flex items-center gap-2">
+            <span className="grid size-5 shrink-0 place-items-center">
+              <Image
+                src="/cyclogo.png"
+                alt=""
+                width={20}
+                height={20}
+                sizes="20px"
+                className="max-h-5 max-w-5 object-contain"
+              />
+            </span>
+            <p className="text-sm leading-tight text-ac-fog">CYC</p>
+          </div>
+          <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.3em] text-ac-ash">May 2026 — July 2026</p>
+          <p className="mt-3 text-sm text-ac-fog">Developing a survey platform used by thousands of users and deploying AI models for survey analysis.</p>
         </div>
       </div>
 
