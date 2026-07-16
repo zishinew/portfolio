@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
+import {
+  BACKGROUND_MUSIC_LOOP_SECONDS,
+  BACKGROUND_MUSIC_SRC,
+} from "@/lib/audio";
 import { useMusicControls } from "./MusicContext";
 
 export default function BackgroundMusic({
@@ -9,6 +13,54 @@ export default function BackgroundMusic({
   shouldLoad: boolean;
 }) {
   const { audioRef, musicEnabled } = useMusicControls();
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    let animationFrame: number | undefined;
+
+    const restartAtLoopPoint = () => {
+      if (audio.currentTime < BACKGROUND_MUSIC_LOOP_SECONDS) return;
+      audio.currentTime = 0;
+    };
+
+    const monitorPlayback = () => {
+      restartAtLoopPoint();
+      if (!audio.paused) {
+        animationFrame = window.requestAnimationFrame(monitorPlayback);
+      }
+    };
+
+    const startMonitoring = () => {
+      if (animationFrame !== undefined) {
+        window.cancelAnimationFrame(animationFrame);
+      }
+      monitorPlayback();
+    };
+
+    const stopMonitoring = () => {
+      if (animationFrame !== undefined) {
+        window.cancelAnimationFrame(animationFrame);
+        animationFrame = undefined;
+      }
+    };
+
+    audio.addEventListener("play", startMonitoring);
+    audio.addEventListener("pause", stopMonitoring);
+    audio.addEventListener("timeupdate", restartAtLoopPoint);
+    audio.addEventListener("seeking", restartAtLoopPoint);
+
+    if (!audio.paused) startMonitoring();
+
+    return () => {
+      stopMonitoring();
+      audio.removeEventListener("play", startMonitoring);
+      audio.removeEventListener("pause", stopMonitoring);
+      audio.removeEventListener("timeupdate", restartAtLoopPoint);
+      audio.removeEventListener("seeking", restartAtLoopPoint);
+    };
+  }, [audioRef, shouldLoad]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -41,5 +93,5 @@ export default function BackgroundMusic({
     return null;
   }
 
-  return <audio ref={audioRef} src="/bg_music.mp3" preload="metadata" loop />;
+  return <audio ref={audioRef} src={BACKGROUND_MUSIC_SRC} preload="metadata" />;
 }

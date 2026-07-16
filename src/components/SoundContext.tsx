@@ -9,12 +9,13 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { CLICK_SOUND_SRC } from "@/lib/audio";
 
 type SoundName = "hover" | "click" | "specialClick";
 
 const soundSources = {
   hover: "/hoversound.wav",
-  click: "/clicksound.wav",
+  click: CLICK_SOUND_SRC,
   specialClick: "/specialclicksound.mp3",
 } satisfies Record<SoundName, string>;
 

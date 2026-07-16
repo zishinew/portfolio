@@ -10,6 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { BACKGROUND_MUSIC_LOOP_SECONDS } from "@/lib/audio";
 
 interface MusicControlsContextType {
   audioRef: React.RefObject<HTMLAudioElement | null>;
@@ -50,9 +51,16 @@ export function MusicProvider({
 
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
-    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const handleTimeUpdate = () =>
+      setCurrentTime(
+        Math.min(audio.currentTime, BACKGROUND_MUSIC_LOOP_SECONDS),
+      );
     const handleLoadedMetadata = () => {
-      setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
+      setDuration(
+        Number.isFinite(audio.duration)
+          ? Math.min(audio.duration, BACKGROUND_MUSIC_LOOP_SECONDS)
+          : 0,
+      );
     };
 
     audio.addEventListener("play", handlePlay);
@@ -88,7 +96,9 @@ export function MusicProvider({
   const seekTo = useCallback((time: number) => {
     const audio = audioRef.current;
     if (!audio) return;
-    const maximum = Number.isFinite(audio.duration) ? audio.duration : 0;
+    const maximum = Number.isFinite(audio.duration)
+      ? Math.min(audio.duration, BACKGROUND_MUSIC_LOOP_SECONDS)
+      : 0;
     audio.currentTime = Math.min(Math.max(time, 0), maximum);
   }, []);
 
