@@ -180,7 +180,7 @@ export default function PortfolioApp({
         },
       ],
       {
-        duration: 760,
+        duration: isFlowerHomePositioned ? 260 : 760,
         easing: "cubic-bezier(0.33, 1, 0.68, 1)",
       },
     );
