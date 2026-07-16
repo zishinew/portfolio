@@ -38,22 +38,22 @@ export default function PlayerBar() {
 
   return (
     <footer
-      className={`animate-site-chrome fixed inset-x-0 bottom-0 z-20 border-t border-ac-steel/70 bg-ac-ink/95 transition-[transform,opacity] duration-700 ease-out ${
+      className={`player-bar animate-site-chrome fixed inset-x-0 bottom-0 z-20 border-t border-ac-steel/70 bg-ac-ink/95 transition-[transform,opacity] duration-700 ease-out ${
         musicEnabled
           ? "translate-y-0 opacity-100"
           : "translate-y-full opacity-0"
       }`}
       aria-hidden={!musicEnabled}
     >
-      <div className="flex items-center gap-4 px-4 py-2.5 font-mono text-[10px] text-ac-ash sm:px-6">
-        <div className="flex items-center gap-3 text-ac-fog">
+      <div className="flex items-center gap-2 px-2 py-1.5 font-mono text-[10px] text-ac-ash sm:gap-4 sm:px-6 sm:py-2.5">
+        <div className="flex items-center text-ac-fog sm:gap-1">
           <button
             type="button"
             aria-label="Rewind 10 seconds"
             tabIndex={musicEnabled ? 0 : -1}
             onMouseEnter={playHover}
             onClick={() => runControl(() => skipBy(-10))}
-            className="transition-colors hover:text-ac-halo focus-visible:outline focus-visible:outline-1 focus-visible:outline-ac-frost"
+            className="grid min-h-11 min-w-11 place-items-center transition-colors hover:text-ac-halo focus-visible:outline focus-visible:outline-1 focus-visible:outline-ac-frost"
           >
             ◄◄
           </button>
@@ -63,7 +63,7 @@ export default function PlayerBar() {
             tabIndex={musicEnabled ? 0 : -1}
             onMouseEnter={playHover}
             onClick={() => runControl(togglePlayback)}
-            className="min-w-4 text-ac-frost transition-colors hover:text-ac-halo focus-visible:outline focus-visible:outline-1 focus-visible:outline-ac-frost"
+            className="grid min-h-11 min-w-11 place-items-center text-ac-frost transition-colors hover:text-ac-halo focus-visible:outline focus-visible:outline-1 focus-visible:outline-ac-frost"
           >
             {isPlaying ? "▐▐" : "►"}
           </button>
@@ -73,12 +73,12 @@ export default function PlayerBar() {
             tabIndex={musicEnabled ? 0 : -1}
             onMouseEnter={playHover}
             onClick={() => runControl(() => skipBy(10))}
-            className="transition-colors hover:text-ac-halo focus-visible:outline focus-visible:outline-1 focus-visible:outline-ac-frost"
+            className="grid min-h-11 min-w-11 place-items-center transition-colors hover:text-ac-halo focus-visible:outline focus-visible:outline-1 focus-visible:outline-ac-frost"
           >
             ►►
           </button>
         </div>
-        <span className="tabular-nums text-ac-frost">{formatTime(currentTime)}</span>
+        <span className="hidden tabular-nums text-ac-frost sm:inline">{formatTime(currentTime)}</span>
         <div className="relative h-[3px] flex-1 bg-ac-steel/60">
           <div
             className="absolute inset-0 origin-left bg-ac-fog/70 transition-transform duration-100"
@@ -102,9 +102,9 @@ export default function PlayerBar() {
             />
           )}
         </div>
-        <span className="tabular-nums text-ac-ash">{formatTime(duration)}</span>
+        <span className="hidden tabular-nums text-ac-ash sm:inline">{formatTime(duration)}</span>
         <span className="hidden uppercase tracking-[0.2em] sm:inline">stereo · 44.1khz</span>
-        <span className="uppercase tracking-[0.2em]">loop ∞</span>
+        <span className="hidden uppercase tracking-[0.2em] sm:inline">loop ∞</span>
       </div>
     </footer>
   );

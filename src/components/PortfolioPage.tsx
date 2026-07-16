@@ -51,9 +51,9 @@ function SectionHeading({ section }: { section: PortfolioSection }) {
   const title = section === "projects" ? "index of works" : section;
 
   return (
-    <div className="mb-8 flex items-center gap-4 sm:mb-10">
+    <div className="mb-8 flex min-w-0 items-center gap-3 sm:mb-10 sm:gap-4">
       <span className="font-pixel text-[12px] text-ac-ash">{current.number}</span>
-      <h1 className="font-mono text-[11px] uppercase tracking-[0.4em] text-ac-fog">
+      <h1 className="min-w-0 font-mono text-[10px] uppercase tracking-[0.3em] text-ac-fog sm:text-[11px] sm:tracking-[0.4em]">
         {title}
       </h1>
       <span className="ac-hairline h-px flex-1" />
@@ -196,7 +196,7 @@ function Projects() {
         {projects.map((project) => (
           <li
             key={project.ref}
-            className="group grid cursor-pointer grid-cols-[auto_1fr_auto] items-baseline gap-x-5 border-t border-ac-steel/60 py-5 last:border-b"
+            className="group grid cursor-pointer grid-cols-[1fr_auto] items-baseline gap-x-3 border-t border-ac-steel/60 py-5 last:border-b sm:grid-cols-[auto_1fr_auto] sm:gap-x-5"
             onMouseEnter={playHover}
             onClick={(event) => {
               const target = event.target;
@@ -207,7 +207,7 @@ function Projects() {
               playClick();
             }}
           >
-            <span className="font-pixel text-[11px] text-ac-ash transition-transform duration-300 group-hover:translate-x-1">
+            <span className="col-span-2 mb-2 font-pixel text-[10px] text-ac-ash transition-transform duration-300 group-hover:translate-x-1 sm:col-span-1 sm:mb-0 sm:text-[11px]">
               {project.ref}
             </span>
             <div>
@@ -254,13 +254,13 @@ function Contact() {
                 href={contact.href}
                 target={contact.href.startsWith("mailto") ? undefined : "_blank"}
                 rel="noreferrer"
-                className="group flex items-baseline justify-between gap-4 py-4 transition-[color,transform] duration-300 hover:translate-x-1 hover:text-ac-halo"
+                className="group flex min-h-14 flex-col items-start justify-center gap-1 py-3 transition-[color,transform] duration-300 hover:translate-x-1 hover:text-ac-halo sm:min-h-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4 sm:py-4"
                 onMouseEnter={playHover}
               >
                 <span className="text-[10px] uppercase tracking-[0.3em] text-ac-ash underline decoration-ac-steel/70 decoration-1 underline-offset-4 transition-colors duration-300 group-hover:text-ac-frost group-hover:decoration-ac-frost">
                   {contact.label}
                 </span>
-                <span className="text-right text-ac-fog underline decoration-ac-steel/70 decoration-1 underline-offset-4 transition-colors duration-300 group-hover:text-ac-halo group-hover:decoration-ac-halo">
+                <span className="max-w-full break-all text-left text-ac-fog underline decoration-ac-steel/70 decoration-1 underline-offset-4 transition-colors duration-300 group-hover:text-ac-halo group-hover:decoration-ac-halo sm:break-normal sm:text-right">
                   {contact.value}
                 </span>
               </a>

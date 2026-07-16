@@ -55,7 +55,7 @@ export default function AudioPreferencesPrompt({
         isExiting ? "animate-prompt-exit" : ""
       }`}
     >
-      <div className="relative w-[340px] animate-glitch-appear">
+      <div className="relative w-[calc(100vw-2rem)] max-w-[340px] animate-glitch-appear">
         <div className={isExiting ? undefined : "animate-prompt-glitch"}>
           <div className="border-2 border-ac-ash bg-ac-ink shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)]">
             <div className="flex items-center justify-between bg-ac-frost px-2 py-1">
@@ -78,7 +78,7 @@ export default function AudioPreferencesPrompt({
                     type="checkbox"
                     checked={musicEnabled}
                     onChange={(event) => setMusicEnabled(event.target.checked)}
-                    className="h-4 w-4 cursor-pointer accent-ac-frost"
+                    className="h-5 w-5 shrink-0 cursor-pointer accent-ac-frost"
                   />
                   <span>Background music</span>
                 </label>
@@ -88,7 +88,7 @@ export default function AudioPreferencesPrompt({
                     type="checkbox"
                     checked={effectsEnabled}
                     onChange={(event) => setEffectsEnabled(event.target.checked)}
-                    className="h-4 w-4 cursor-pointer accent-ac-frost"
+                    className="h-5 w-5 shrink-0 cursor-pointer accent-ac-frost"
                   />
                   <span>Sound effects</span>
                 </label>
@@ -99,7 +99,7 @@ export default function AudioPreferencesPrompt({
                   type="button"
                   onClick={handleConfirm}
                   disabled={isExiting}
-                  className="min-w-[92px] border-2 border-ac-ash bg-ac-ink px-4 py-1.5 font-pixel text-[11px] uppercase text-ac-bone transition-[background-color,transform,opacity] hover:bg-ac-ash/20 active:translate-y-0.5 disabled:pointer-events-none disabled:opacity-60"
+                  className="min-h-11 min-w-[92px] border-2 border-ac-ash bg-ac-ink px-4 py-1.5 font-pixel text-[11px] uppercase text-ac-bone transition-[background-color,transform,opacity] hover:bg-ac-ash/20 active:translate-y-0.5 disabled:pointer-events-none disabled:opacity-60"
                   style={{
                     boxShadow:
                       "inset 1px 1px 0px rgba(255,255,255,0.3), inset -1px -1px 0px rgba(0,0,0,0.2)",

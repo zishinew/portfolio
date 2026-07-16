@@ -717,3 +717,43 @@ body {
     rgba(255, 255, 255, 0) 100%
   );
 }
+
+/* Mobile composition: keep every section reachable and every petal tappable. */
+@media (max-width: 63.999rem) {
+  .portfolio-scroll-region {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .portfolio-scroll-region::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mechanical-flower__prompt,
+  .mechanical-flower__controls button {
+    display: none;
+  }
+}
+
+@media (max-width: 39.999rem) {
+  .portfolio-flower-menu.is-home-positioned {
+    --home-flower-size: min(72vw, 320px, 38svh);
+    left: 0;
+    top: 70%;
+  }
+
+  .home-intro-copy {
+    width: 100%;
+  }
+
+  .ac-image-edge-fade::after {
+    width: 32%;
+  }
+}
+
+@media (hover: none) {
+  .ac-plate:hover {
+    border-color: var(--color-ac-steel);
+    transform: none;
+  }
+}

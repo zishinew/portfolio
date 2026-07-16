@@ -427,7 +427,7 @@ export default function HomeView({
         data-returning-home={isReturningHome}
       >
         <p className="home-intro-meta pointer-events-none relative z-10 mb-4 font-mono text-[9px] uppercase tracking-[0.5em] text-ac-ash sm:text-[10px]">
-          vol. i — personal archive
+          portfolio
         </p>
         <h1
           className="home-intro-name pointer-events-none relative z-10 text-[16vw] font-medium lowercase leading-[0.82] tracking-tight text-ac-halo sm:text-[11.5vw] md:text-[7vw]"

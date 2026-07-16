@@ -401,7 +401,7 @@ export default function PortfolioApp({
         <div className="portfolio-page-grid relative z-10 mx-auto grid h-[100svh] max-w-[1600px] overflow-hidden lg:grid-cols-[minmax(420px,42vw)_1fr]">
           <div className="portfolio-flower-panel relative hidden lg:block" aria-hidden />
 
-          <section className="relative flex h-[100svh] items-center overflow-hidden px-5 pb-72 pt-24 sm:px-10 sm:pb-80 lg:px-12 lg:py-24 xl:px-16">
+          <section className="portfolio-scroll-region relative flex h-[100svh] items-start overflow-x-hidden overflow-y-auto overscroll-contain px-5 pb-72 pt-20 sm:px-10 sm:pb-80 sm:pt-24 lg:items-center lg:overflow-hidden lg:px-12 lg:py-24 xl:px-16">
             <div
               className="portfolio-content-stack relative w-full max-w-5xl"
             >
@@ -432,7 +432,7 @@ export default function PortfolioApp({
         <button
           type="button"
           onClick={returnHome}
-          className="group fixed bottom-16 left-5 z-40 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.28em] text-ac-ash transition-colors hover:text-ac-halo focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-ac-frost sm:left-8"
+          className="portfolio-back-button group fixed bottom-16 right-5 z-40 flex min-h-11 items-center gap-2 px-1 font-mono text-[9px] uppercase tracking-[0.28em] text-ac-ash transition-colors hover:text-ac-halo focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-ac-frost sm:right-8 lg:left-8 lg:right-auto lg:min-h-0 lg:px-0"
           aria-label="Back to portfolio home"
         >
           <span
@@ -447,7 +447,7 @@ export default function PortfolioApp({
 
       <div
         ref={flowerMenuRef}
-        className={`portfolio-flower-menu fixed bottom-4 left-4 h-52 w-52 sm:h-60 sm:w-60 lg:bottom-auto lg:left-[1vw] lg:top-1/2 lg:h-[40vw] lg:max-h-[650px] lg:min-h-[420px] lg:w-[40vw] lg:max-w-[650px] lg:min-w-[420px] lg:-translate-y-1/2 ${isHome ? "z-[6]" : "z-30"}${isFlowerHomePositioned ? " is-home-positioned" : ""}`}
+        className={`portfolio-flower-menu fixed bottom-16 left-3 h-40 w-40 sm:left-6 sm:h-52 sm:w-52 lg:bottom-auto lg:left-[1vw] lg:top-1/2 lg:h-[40vw] lg:max-h-[650px] lg:min-h-[420px] lg:w-[40vw] lg:max-w-[650px] lg:min-w-[420px] lg:-translate-y-1/2 ${isHome ? "z-[6]" : "z-30"}${isFlowerHomePositioned ? " is-home-positioned" : ""}`}
         aria-label="Portfolio menu"
       >
         <MechanicalFlower
